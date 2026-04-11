@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dB Smarthome & Security | Mission Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="command-center">
+        <header class="top-bar glass-effect">
+            <div class="brand">
+                <h1>dB<span class="neon-text">SECURITY</span></h1>
+            </div>
+            <div class="system-status">
+                <span class="status-text">NETWORK SECURE</span>
+                <span class="indicator-dot online"></span>
+            </div>
+        </header>
+
+        <main class="dashboard">
+            <section class="panel glass-effect privacy-zone">
+                <div class="panel-header">
+                    <h2>PRIVACY</h2>
+                    <span class="badge active">SECURE</span>
+                </div>
+                <div class="panel-content">
+                    <p class="data-text">Kamera Dalaman: OFF (Mod Privasi)</p>
+                    <p class="data-text">Akses Pintu: DIKUNCI</p>
+                </div>
+            </section>
+
+            <section class="panel glass-effect business-zone">
+                <div class="panel-header">
+                    <h2>BUSINESS</h2>
+                    <span class="badge alert">MONITORING</span>
+                </div>
+                <div class="panel-content">
+                    <p class="data-text">CCTV Perimeter Utama: LIVE (4K)</p>
+                    <div class="video-placeholder">Feed Video (Akan Datang)</div>
+                </div>
+            </section>
+
+            <section class="panel glass-effect work-zone">
+                <div class="panel-header">
+                    <h2>WORK</h2>
+                    <span class="badge info">LOGS</span>
+                </div>
+                <div class="panel-content">
+                    <p class="data-text" id="time-log">Semakan Pelayan: Mengemaskini...</p>
+                    <p class="data-text">Status API: Menunggu Sambungan</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
