@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Tambahan gaya khas untuk form/input */
         .form-group { margin-bottom: 15px; }
         label { display: block; color: var(--neon-cyan); font-size: 0.85rem; margin-bottom: 5px; font-weight: 600;}
         input[type="text"], input[type="number"], select {
@@ -40,7 +39,7 @@
                 <h1>dB<span class="neon-text">ASSESSMENT</span></h1>
                 <a href="index.html" style="font-size: 0.75rem; color: var(--text-muted); text-decoration: none; border: 1px solid var(--text-muted); padding: 3px 8px; border-radius: 4px; margin-top: 5px; display: inline-block;">&larr; Balik ke Dashboard</a>
             </div>
-            <div class="system-status"><span class="status-text">ADMIN MODE</span><span class="indicator-dot online"></span></div>
+            <div class="system-status"><span class="status-text" id="db-status">DB: LOCAL</span><span class="indicator-dot online"></span></div>
         </header>
 
         <main class="dashboard">
@@ -86,10 +85,23 @@
                     <span class="badge alert">STEP 2</span>
                 </div>
                 <div class="panel-content">
+                    
+                    <div class="form-group">
+                        <label>Pakej / Model Utama CCTV</label>
+                        <select id="cctv-type">
+                            <option value="cctv_analog">Analog HD (2MP) - Bajet / Standard</option>
+                            <option value="cctv_ipcam" selected>IP Camera (4MP) - Kualiti Tinggi</option>
+                            <option value="cctv_colorvu">ColorVu / Full Color (4MP) - Premium Malam</option>
+                            <option value="cctv_ptz">PTZ Camera (Boleh Pusing/Zoom)</option>
+                            <option value="cctv_none">Tiada CCTV (Hanya Alarm)</option>
+                        </select>
+                    </div>
+
                     <div class="form-group">
                         <label>Jumlah Kamera CCTV (Unit)</label>
                         <input type="number" id="qty-cctv" value="0" min="0">
                     </div>
+
                     <div class="form-group">
                         <label>Sistem Penggera Pintar (Alarm)</label>
                         <select id="qty-alarm">
@@ -111,60 +123,109 @@
         </main>
     </div>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // 1. Masukkan API Key anda di sini kelak
+        const firebaseConfig = {
+            apiKey: "MASUKKAN_API_KEY_NANTI",
+            authDomain: "db-smarthome-app.firebaseapp.com",
+            projectId: "db-smarthome-app"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 2. Senarai Harga Lalai (Offline / Sebelum Firebase Siap)
+        let hargaSistem = {
+            cctv_analog: 150,
+            cctv_ipcam: 250,
+            cctv_colorvu: 350,
+            cctv_ptz: 600,
+            cctv_none: 0,
+            alarm_basic: 450,
+            alarm_pro: 850,
+            upah_asas: 300,
+            caj_concrete: 150,
+            caj_conceal: 200
+        };
+
+        // 3. Fungsi Menarik Harga Terkini dari Firebase
+        async function muatTurunHarga() {
+            try {
+                // Merujuk kepada collection 'tetapan_sistem' -> document 'harga_semasa'
+                const docRef = doc(db, "tetapan_sistem", "harga_semasa");
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    // Tulis ganti (override) harga lalai dengan harga dari cloud
+                    hargaSistem = { ...hargaSistem, ...docSnap.data() };
+                    document.getElementById('db-status').innerText = "DB: CLOUD";
+                    console.log("Harga berjaya dikemaskini dari Firebase!");
+                }
+            } catch (error) {
+                console.log("Menggunakan Harga Lalai (Offline Mode).");
+            }
+        }
+
+        // Laksanakan fungsi tarik harga sebaik sahaja halaman dibuka
+        muatTurunHarga();
+
+        // Variabel global untuk WhatsApp
         let currentTotal = 0;
 
-        function calculateQuote() {
-            const pricePerCCTV = 250; 
-            const priceAlarmBasic = 450;
-            const priceAlarmPro = 850;
-            let baseLaborFee = 300; 
+        // 4. Jadikan fungsi global supaya butang HTML boleh membacanya
+        window.calculateQuote = function() {
+            const modelDipilih = document.getElementById('cctv-type').value; 
+            const hargaCCTV = hargaSistem[modelDipilih]; 
+            
+            let kosUpah = hargaSistem.upah_asas; 
 
-            // Tambahan caj jika siling konkrit
             const ceiling = document.getElementById('ceiling-type').value;
-            if (ceiling === 'concrete') baseLaborFee += 150; 
+            if (ceiling === 'concrete') kosUpah += hargaSistem.caj_concrete; 
 
-            // Tambahan caj jika wiring conceal/hacking
             const wiring = document.getElementById('wiring-status').value;
-            if (wiring === 'conceal') baseLaborFee += 200;
+            if (wiring === 'conceal') kosUpah += hargaSistem.caj_conceal;
 
             let qtyCCTV = parseInt(document.getElementById('qty-cctv').value) || 0;
             let qtyAlarm = parseInt(document.getElementById('qty-alarm').value) || 0;
             
-            currentTotal = baseLaborFee + (qtyCCTV * pricePerCCTV);
+            // Pengiraan Total
+            currentTotal = kosUpah + (qtyCCTV * hargaCCTV);
             
-            if (qtyAlarm === 1) currentTotal += priceAlarmBasic;
-            if (qtyAlarm === 2) currentTotal += priceAlarmPro;
+            if (qtyAlarm === 1) currentTotal += hargaSistem.alarm_basic;
+            if (qtyAlarm === 2) currentTotal += hargaSistem.alarm_pro;
 
             if (qtyCCTV === 0 && qtyAlarm === 0) currentTotal = 0;
 
             document.getElementById('total-rm').innerText = currentTotal.toFixed(2);
             document.getElementById('quote-box').style.display = 'block';
-        }
+        };
 
-        function sendToWhatsApp() {
+        window.sendToWhatsApp = function() {
             const name = document.getElementById('client-name').value || "Pelanggan";
             const phone = document.getElementById('client-phone').value;
             const qtyCCTV = document.getElementById('qty-cctv').value;
+            
+            const cctvDropdown = document.getElementById('cctv-type');
+            const cctvModelName = cctvDropdown.options[cctvDropdown.selectedIndex].text;
             
             if (!phone) {
                 alert("Sila masukkan No WhatsApp pelanggan dahulu.");
                 return;
             }
 
-            // Membuang awalan '0' atau aksara lain dan memastikan format antarabangsa (60)
             let formattedPhone = phone.replace(/\D/g, ''); 
             if (formattedPhone.startsWith('0')) {
                 formattedPhone = '6' + formattedPhone;
             }
 
-            // Format mesej WhatsApp
-            const message = `Salam Tuan/Puan ${name},\n\nTerima kasih kerana berminat dengan *dB Smarthome & Security*.\n\nBerikut adalah anggaran sebut harga awal untuk tapak anda:\n\n📷 Jumlah CCTV: ${qtyCCTV} Unit\n🛠️ Kos Anggaran (Termasuk Perkakasan & Upah): *RM ${currentTotal.toFixed(2)}*\n\nSila maklumkan jika anda setuju untuk kami teruskan dengan lawatan tapak susulan atau pemasangan. Terima kasih!`;
+            const message = `Salam Tuan/Puan ${name},\n\nTerima kasih kerana berminat dengan *dB Smarthome & Security*.\n\nBerikut adalah anggaran sebut harga awal untuk tapak anda:\n\n📷 Sistem: ${qtyCCTV} Unit (${cctvModelName})\n🛠️ Kos Anggaran (Termasuk Perkakasan & Upah): *RM ${currentTotal.toFixed(2)}*\n\nSila maklumkan jika anda setuju untuk kami teruskan dengan lawatan tapak susulan atau pemasangan. Terima kasih!`;
 
-            // Buka pautan WhatsApp
             const waLink = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
             window.open(waLink, '_blank');
-        }
+        };
     </script>
 </body>
 </html>
