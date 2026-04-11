@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dB Security | Site Assessment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Tambahan gaya khas untuk form/input */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; color: var(--neon-cyan); font-size: 0.85rem; margin-bottom: 5px; font-weight: 600;}
+        input[type="text"], input[type="number"], select {
+            width: 100%; padding: 10px; border-radius: 6px;
+            background: rgba(0,0,0,0.5); color: #fff;
+            border: 1px solid var(--text-muted);
+            font-family: 'Inter', sans-serif;
+        }
+        input:focus { border-color: var(--neon-cyan); outline: none; }
+        .btn-calc {
+            width: 100%; padding: 12px; margin-top: 10px;
+            background: rgba(0, 240, 255, 0.2); color: var(--neon-cyan);
+            border: 1px solid var(--neon-cyan); border-radius: 6px;
+            font-family: 'Rajdhani', sans-serif; font-size: 1.1rem; font-weight: bold;
+            cursor: pointer; transition: 0.3s;
+        }
+        .btn-calc:hover { background: var(--neon-cyan); color: #000; }
+        .quote-result {
+            margin-top: 20px; padding: 15px; border-radius: 6px;
+            background: rgba(255, 0, 60, 0.1); border: 1px dashed var(--laser-red);
+            text-align: center;
+        }
+        .total-price { font-size: 1.8rem; color: var(--laser-red); font-weight: bold; font-family: 'Rajdhani', sans-serif;}
+    </style>
+</head>
+<body>
+    <div class="command-center">
+        <header class="top-bar glass-effect">
+            <div class="brand"><h1>dB<span class="neon-text">ASSESSMENT</span></h1></div>
+            <div class="system-status"><span class="status-text">ADMIN MODE</span><span class="indicator-dot online"></span></div>
+        </header>
+
+        <main class="dashboard">
+            <section class="panel glass-effect">
+                <div class="panel-header">
+                    <h2>DATA TAPAK (SITE VISIT)</h2>
+                    <span class="badge active">STEP 1</span>
+                </div>
+                <div class="panel-content">
+                    <div class="form-group">
+                        <label>Nama Pelanggan / Syarikat</label>
+                        <input type="text" id="client-name" placeholder="Cth: Kedai Emas ABC">
+                    </div>
+                    <div class="form-group">
+                        <label>Status Pendawaian (Wiring)</label>
+                        <select id="wiring-status">
+                            <option value="ready">Sedia Ada (Surface)</option>
+                            <option value="conceal">Tanam (Conceal) - Perlu hacking</option>
+                            <option value="none">Kosong (Perlu tarik kabel baru)</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel glass-effect">
+                <div class="panel-header">
+                    <h2>KEPERLUAN SISTEM (REQUIREMENTS)</h2>
+                    <span class="badge alert">STEP 2</span>
+                </div>
+                <div class="panel-content">
+                    <div class="form-group">
+                        <label>Jumlah Kamera CCTV (Unit)</label>
+                        <input type="number" id="qty-cctv" value="0" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Sistem Penggera Pintar (Alarm / Sensor)</label>
+                        <select id="qty-alarm">
+                            <option value="0">Tidak Perlu</option>
+                            <option value="1">Set Asas (1 Hub, 2 Sensor)</option>
+                            <option value="2">Set Penuh (Siren & Pelbagai Sensor)</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn-calc" onclick="calculateQuote()">JANA SEBUT HARGA</button>
+
+                    <div class="quote-result" id="quote-box" style="display: none;">
+                        <p class="data-text">Anggaran Kos Pemasangan & Perkakasan:</p>
+                        <p class="total-price">RM <span id="total-rm">0.00</span></p>
+                        <p class="data-text" style="font-size:0.75rem; margin-top:5px;">*Sebut harga rasmi akan dihantar ke WhatsApp</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Logik kalkulator ringkas untuk kegunaan admin di tapak
+        function calculateQuote() {
+            // Tetapan harga asas (Boleh ubah suai nanti)
+            const pricePerCCTV = 250; // Harga 1 unit CCTV + Kabel
+            const priceAlarmBasic = 450;
+            const priceAlarmPro = 850;
+            const baseLaborFee = 300; // Upah asas
+
+            let qtyCCTV = parseInt(document.getElementById('qty-cctv').value) || 0;
+            let qtyAlarm = parseInt(document.getElementById('qty-alarm').value) || 0;
+            
+            let totalCost = baseLaborFee + (qtyCCTV * pricePerCCTV);
+            
+            if (qtyAlarm === 1) totalCost += priceAlarmBasic;
+            if (qtyAlarm === 2) totalCost += priceAlarmPro;
+
+            // Jika pelanggan tidak pilih apa-apa
+            if (qtyCCTV === 0 && qtyAlarm === 0) {
+                totalCost = 0;
+            }
+
+            document.getElementById('total-rm').innerText = totalCost.toFixed(2);
+            document.getElementById('quote-box').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
