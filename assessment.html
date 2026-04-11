@@ -36,20 +36,27 @@
 <body>
     <div class="command-center">
         <header class="top-bar glass-effect">
-            <div class="brand"><h1>dB<span class="neon-text">ASSESSMENT</span></h1></div>
+            <div class="brand">
+                <h1>dB<span class="neon-text">ASSESSMENT</span></h1>
+                <a href="index.html" style="font-size: 0.75rem; color: var(--text-muted); text-decoration: none; border: 1px solid var(--text-muted); padding: 3px 8px; border-radius: 4px; margin-top: 5px; display: inline-block;">&larr; Balik ke Dashboard</a>
+            </div>
             <div class="system-status"><span class="status-text">ADMIN MODE</span><span class="indicator-dot online"></span></div>
         </header>
 
         <main class="dashboard">
             <section class="panel glass-effect">
                 <div class="panel-header">
-                    <h2>DATA TAPAK (SITE VISIT)</h2>
+                    <h2>DATA KLIEN & TAPAK</h2>
                     <span class="badge active">STEP 1</span>
                 </div>
                 <div class="panel-content">
                     <div class="form-group">
                         <label>Nama Pelanggan / Syarikat</label>
                         <input type="text" id="client-name" placeholder="Cth: Kedai Emas ABC">
+                    </div>
+                    <div class="form-group">
+                        <label>No. WhatsApp Pelanggan</label>
+                        <input type="number" id="client-phone" placeholder="Cth: 60123456789">
                     </div>
                     <div class="form-group">
                         <label>Status Pendawaian (Wiring)</label>
@@ -59,12 +66,23 @@
                             <option value="none">Kosong (Perlu tarik kabel baru)</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label>Jenis Siling (Kabel)</label>
+                        <select id="ceiling-type">
+                            <option value="plaster">Siling Plaster (Mudah)</option>
+                            <option value="concrete">Konkrit / Permukaan (Perlu Casing)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Gambar Tapak (Pilihan)</label>
+                        <input type="file" accept="image/*" capture="environment" style="font-size: 0.8rem;">
+                    </div>
                 </div>
             </section>
 
             <section class="panel glass-effect">
                 <div class="panel-header">
-                    <h2>KEPERLUAN SISTEM (REQUIREMENTS)</h2>
+                    <h2>KEPERLUAN SISTEM</h2>
                     <span class="badge alert">STEP 2</span>
                 </div>
                 <div class="panel-content">
@@ -73,7 +91,7 @@
                         <input type="number" id="qty-cctv" value="0" min="0">
                     </div>
                     <div class="form-group">
-                        <label>Sistem Penggera Pintar (Alarm / Sensor)</label>
+                        <label>Sistem Penggera Pintar (Alarm)</label>
                         <select id="qty-alarm">
                             <option value="0">Tidak Perlu</option>
                             <option value="1">Set Asas (1 Hub, 2 Sensor)</option>
@@ -81,12 +99,12 @@
                         </select>
                     </div>
                     
-                    <button class="btn-calc" onclick="calculateQuote()">JANA SEBUT HARGA</button>
+                    <button class="btn-calc" onclick="calculateQuote()">KIRA & JANA MESEJ</button>
 
                     <div class="quote-result" id="quote-box" style="display: none;">
-                        <p class="data-text">Anggaran Kos Pemasangan & Perkakasan:</p>
+                        <p class="data-text">Anggaran Kos Pemasangan:</p>
                         <p class="total-price">RM <span id="total-rm">0.00</span></p>
-                        <p class="data-text" style="font-size:0.75rem; margin-top:5px;">*Sebut harga rasmi akan dihantar ke WhatsApp</p>
+                        <button onclick="sendToWhatsApp()" style="width: 100%; padding: 10px; margin-top: 15px; background: #25D366; color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Hantar ke WhatsApp Klien</button>
                     </div>
                 </div>
             </section>
@@ -94,29 +112,58 @@
     </div>
 
     <script>
-        // Logik kalkulator ringkas untuk kegunaan admin di tapak
+        let currentTotal = 0;
+
         function calculateQuote() {
-            // Tetapan harga asas (Boleh ubah suai nanti)
-            const pricePerCCTV = 250; // Harga 1 unit CCTV + Kabel
+            const pricePerCCTV = 250; 
             const priceAlarmBasic = 450;
             const priceAlarmPro = 850;
-            const baseLaborFee = 300; // Upah asas
+            let baseLaborFee = 300; 
+
+            // Tambahan caj jika siling konkrit
+            const ceiling = document.getElementById('ceiling-type').value;
+            if (ceiling === 'concrete') baseLaborFee += 150; 
+
+            // Tambahan caj jika wiring conceal/hacking
+            const wiring = document.getElementById('wiring-status').value;
+            if (wiring === 'conceal') baseLaborFee += 200;
 
             let qtyCCTV = parseInt(document.getElementById('qty-cctv').value) || 0;
             let qtyAlarm = parseInt(document.getElementById('qty-alarm').value) || 0;
             
-            let totalCost = baseLaborFee + (qtyCCTV * pricePerCCTV);
+            currentTotal = baseLaborFee + (qtyCCTV * pricePerCCTV);
             
-            if (qtyAlarm === 1) totalCost += priceAlarmBasic;
-            if (qtyAlarm === 2) totalCost += priceAlarmPro;
+            if (qtyAlarm === 1) currentTotal += priceAlarmBasic;
+            if (qtyAlarm === 2) currentTotal += priceAlarmPro;
 
-            // Jika pelanggan tidak pilih apa-apa
-            if (qtyCCTV === 0 && qtyAlarm === 0) {
-                totalCost = 0;
+            if (qtyCCTV === 0 && qtyAlarm === 0) currentTotal = 0;
+
+            document.getElementById('total-rm').innerText = currentTotal.toFixed(2);
+            document.getElementById('quote-box').style.display = 'block';
+        }
+
+        function sendToWhatsApp() {
+            const name = document.getElementById('client-name').value || "Pelanggan";
+            const phone = document.getElementById('client-phone').value;
+            const qtyCCTV = document.getElementById('qty-cctv').value;
+            
+            if (!phone) {
+                alert("Sila masukkan No WhatsApp pelanggan dahulu.");
+                return;
             }
 
-            document.getElementById('total-rm').innerText = totalCost.toFixed(2);
-            document.getElementById('quote-box').style.display = 'block';
+            // Membuang awalan '0' atau aksara lain dan memastikan format antarabangsa (60)
+            let formattedPhone = phone.replace(/\D/g, ''); 
+            if (formattedPhone.startsWith('0')) {
+                formattedPhone = '6' + formattedPhone;
+            }
+
+            // Format mesej WhatsApp
+            const message = `Salam Tuan/Puan ${name},\n\nTerima kasih kerana berminat dengan *dB Smarthome & Security*.\n\nBerikut adalah anggaran sebut harga awal untuk tapak anda:\n\n📷 Jumlah CCTV: ${qtyCCTV} Unit\n🛠️ Kos Anggaran (Termasuk Perkakasan & Upah): *RM ${currentTotal.toFixed(2)}*\n\nSila maklumkan jika anda setuju untuk kami teruskan dengan lawatan tapak susulan atau pemasangan. Terima kasih!`;
+
+            // Buka pautan WhatsApp
+            const waLink = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+            window.open(waLink, '_blank');
         }
     </script>
 </body>
