@@ -176,9 +176,21 @@
         </a>
     </nav>
 
-    <script src="assets/js/db-risingnet.js"></script>
-
+    <script src="assets/js/db/db-dahua-camera.js"></script>
+    <script src="assets/js/db/db-dahua-recorder.js"></script>
     <script>
+        // Logik Penggabungan (Merge) Master Database
+        let dbItems = [];
+        try {
+            // Kita semak jika fail JS wujud sebelum gabungkan (untuk elak ralat jika fail tiada)
+            const cams = typeof dahuaCameras !== 'undefined' ? dahuaCameras : [];
+            const recs = typeof dahuaRecorders !== 'undefined' ? dahuaRecorders : [];
+            
+            dbItems = [...cams, ...recs];
+        } catch (error) {
+            console.error("Gagal menggabungkan pangkalan data.", error);
+        }
+
         function renderInventory() {
             const container = document.getElementById('inventoryContainer');
             const searchQ = document.getElementById('searchInput').value.toLowerCase();
@@ -187,8 +199,8 @@
             
             container.innerHTML = ''; 
 
-            if (typeof dbItems === 'undefined') {
-                container.innerHTML = '<div style="color: red; text-align: center; padding: 20px;">Ralat: Fail db-risingnet.js tidak dijumpai.</div>';
+            if (!dbItems || dbItems.length === 0) {
+                container.innerHTML = '<div style="color: var(--accent-orange); text-align: center; padding: 20px; font-family: \'JetBrains Mono\', monospace;">Sistem Mesej: Pangkalan data kosong. Pastikan fail berada dalam folder assets/js/db/</div>';
                 return;
             }
 
