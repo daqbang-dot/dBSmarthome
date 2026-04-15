@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DBSS OS | Inventory Data</title>
+    <title>DBSS OS | Dynamic Inventory</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -15,6 +15,7 @@
             --accent-blue: #007BFF;
             --accent-lime: #39FF14;
             --accent-orange: #FFA500;
+            --danger-red: #FF3B30;
         }
 
         body {
@@ -43,7 +44,6 @@
         
         .container { padding: 15px; max-width: 800px; margin: 0 auto; }
 
-        /* Kawalan Carian & Markup Global */
         .control-panel {
             background: var(--glass-bg);
             backdrop-filter: blur(12px);
@@ -52,13 +52,8 @@
             padding: 15px;
             margin-bottom: 15px;
             display: grid;
-            grid-template-columns: 1fr; /* Menegak di telefon */
+            grid-template-columns: 1fr; 
             gap: 12px;
-        }
-
-        /* Susunan melintang untuk skrin sedikit besar */
-        @media (min-width: 600px) {
-            .control-panel { grid-template-columns: 1fr 1fr 1fr; }
         }
 
         input, select {
@@ -71,7 +66,14 @@
 
         .markup-label { font-size: 10px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; margin-bottom: 5px; display: block;}
 
-        /* Senarai Inventory (Bento Cards) */
+        .btn-add {
+            width: 100%; background: var(--accent-blue); border: none;
+            color: #fff; padding: 12px; border-radius: 8px; font-weight: 700;
+            cursor: pointer; font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 15px;
+        }
+
+        /* Inventory List & Cards */
         .inventory-list { display: flex; flex-direction: column; gap: 10px; }
 
         .item-card {
@@ -84,7 +86,7 @@
             grid-template-columns: 1fr auto;
             align-items: center;
             gap: 10px;
-            transition: all 0.3s;
+            position: relative;
         }
 
         .item-details .category { font-size: 10px; color: var(--accent-orange); font-family: 'JetBrains Mono', monospace; }
@@ -93,6 +95,39 @@
         .price-section { text-align: right; font-family: 'JetBrains Mono', monospace; }
         .price-section .cost { font-size: 11px; color: #E53E3E; text-decoration: line-through; }
         .price-section .sell { font-size: 16px; font-weight: 700; color: var(--accent-lime); }
+        .price-section .ask-price { font-size: 14px; font-weight: 700; color: var(--accent-orange); }
+
+        .card-actions {
+            grid-column: span 2;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+            border-top: 1px dashed var(--glass-border);
+            padding-top: 10px;
+        }
+        .action-icon {
+            background: rgba(255,255,255,0.1); border: none; color: #fff;
+            padding: 5px 10px; border-radius: 4px; font-size: 10px; cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .action-icon.delete { color: var(--danger-red); }
+
+        /* Modal (Popup) Styling */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;
+            padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: var(--bg-dark); border: 1px solid var(--glass-border);
+            border-radius: 12px; width: 100%; max-width: 400px; padding: 20px;
+        }
+        .modal-header { font-size: 16px; font-weight: 700; margin-bottom: 15px; color: var(--accent-lime); }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-actions button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;}
+        .btn-cancel { background: #2D3748; color: white; }
+        .btn-save { background: var(--accent-lime); color: #000; }
 
         /* Bottom Nav */
         .bottom-nav {
@@ -109,45 +144,26 @@
 
     <header class="top-header">
         <div class="module-title">DB_INVENTORY_</div>
-        <div style="font-size: 12px; color: var(--text-muted);">Master Database</div>
+        <div style="font-size: 12px; color: var(--accent-lime);">System: Read/Write Active</div>
     </header>
 
     <div class="container">
         
+        <button class="btn-add" onclick="openModal()">+ INJECT NEW DATA</button>
+
         <div class="control-panel">
             <div>
-                <span class="markup-label">Kumpulan Sistem</span>
-                <select id="groupFilter" onchange="renderInventory()">
-                    <option value="ALL">-- PAPAR SEMUA --</option>
-                    <option value="DAHUA HDCVI CAMERA">DAHUA HDCVI CAMERA</option>
-                    <option value="DAHUA HDCVI RECORDERS">DAHUA HDCVI RECORDERS</option>
-                    <option value="DAHUA NETWORK CAMERA">DAHUA NETWORK CAMERA</option>
-                    <option value="DAHUA NETWORK RECORDERS">DAHUA NETWORK RECORDERS</option>
-                    <option value="OTHERS (DAHUA)">OTHERS (DAHUA)</option>
-                    <option value="DAHUA ACCESSORIES">DAHUA ACCESSORIES</option>
-                    <option value="REYEE SWITCH">REYEE SWITCH</option>
-                    <option value="UNIARCH WIRELESS CAMERA">UNIARCH WIRELESS CAMERA</option>
-                    <option value="REYEE GATEWAY">REYEE GATEWAY</option>
-                    <option value="VIEWSONIC MONITORS">VIEWSONIC MONITORS</option>
-                    <option value="REYEE WIRELESS">REYEE WIRELESS</option>
-                    <option value="REYEE HOME WIFI ROUTER">REYEE HOME WIFI ROUTER</option>
-                    <option value="ST RACK SERVER RACK">ST RACK SERVER RACK</option>
-                    <option value="IMOU WIRELESS CAMERA">IMOU WIRELESS CAMERA</option>
-                    <option value="BLUGUARD WIRED ALARM">BLUGUARD WIRED ALARM</option>
-                    <option value="BLUGUARD SMART HOME">BLUGUARD SMART HOME</option>
-                    <option value="CONTRONETIX OFFLINE & ONLINE UPS">CONTRONETIX UPS</option>
-                    <option value="RYSON SOLAR PANEL">RYSON SOLAR PANEL</option>
-                    <option value="CABLE & DOOR ACCESS ACCESSORIES">ACCESS & CABLE</option>
-                    <option value="DEEP CYCLE BATTERY">DEEP CYCLE BATTERY</option>
-                    <option value="DJI DRONE & OTHERS ACCESSORIES">DJI DRONE</option>
-                </select>
+                <span class="markup-label">Kumpulan Sistem (Dinamik)</span>
+                <input type="text" id="groupFilter" list="groupList" placeholder="Taip atau pilih kategori..." oninput="renderInventory()">
+                <datalist id="groupList">
+                    </datalist>
             </div>
             <div>
-                <span class="markup-label">Carian Model / ID</span>
+                <span class="markup-label">Carian Model / Perkakasan</span>
                 <input type="text" id="searchInput" placeholder="Cari..." onkeyup="renderInventory()">
             </div>
             <div>
-                <span class="markup-label">Auto Markup (%)</span>
+                <span class="markup-label">Auto Markup Global (%)</span>
                 <input type="number" id="markupInput" value="30" onchange="renderInventory()" onkeyup="renderInventory()">
             </div>
         </div>
@@ -155,6 +171,31 @@
         <div class="inventory-list" id="inventoryContainer">
             </div>
 
+    </div>
+
+    <div class="modal" id="itemModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">TAMBAH PERKAKASAN BARU</div>
+            <input type="hidden" id="editIndex"> <span class="markup-label">ID Model / Kod (Cth: CABLE-01)</span>
+            <input type="text" id="modalId" placeholder="Masukkan ID">
+            
+            <span class="markup-label">Nama Perkakasan / Servis</span>
+            <input type="text" id="modalName" placeholder="Cth: Upah Tarik Kabel">
+            
+            <span class="markup-label">Kategori (Pilih atau Taip Baru)</span>
+            <input type="text" id="modalGroup" list="groupList" placeholder="Cth: UPAH KERJA">
+            
+            <span class="markup-label">Jenama (Pilihan)</span>
+            <input type="text" id="modalBrand" placeholder="Cth: OEM / DAHUA">
+            
+            <span class="markup-label">Harga Kos Pembekal (RM) *Letak 0 jika perlu rujuk</span>
+            <input type="number" id="modalCost" placeholder="0.00">
+
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal()">BATAL</button>
+                <button class="btn-save" onclick="saveItem()">SIMPAN DATA</button>
+            </div>
+        </div>
     </div>
 
     <nav class="bottom-nav">
@@ -180,70 +221,198 @@
     <script src="assets/js/db/db-dahua-recorder.js"></script>
     <script src="assets/js/db/db-dahua-network.js"></script>
     <script src="assets/js/db/db-dahua-network-recorder.js"></script>
-    <script src="assets/js/db/db-dahua-accessories.js"></script> <script>
-        // Logik Penggabungan (Merge) Master Database
+    <script src="assets/js/db/db-dahua-accessories.js"></script>
+
+    <script>
         let dbItems = [];
-        try {
-            // Semak jika fail JS wujud sebelum gabungkan
-            const cams = typeof dahuaCameras !== 'undefined' ? dahuaCameras : [];
-            const recs = typeof dahuaRecorders !== 'undefined' ? dahuaRecorders : [];
-            const netcams = typeof dahuaNetworkCameras !== 'undefined' ? dahuaNetworkCameras : []; 
-            const netrecs = typeof dahuaNetworkRecorders !== 'undefined' ? dahuaNetworkRecorders : []; 
-            const accessories = typeof dahuaAccessories !== 'undefined' ? dahuaAccessories : []; // PEMBOLEHUBAH BARU
+
+        // FUNGSI INIT: Semak LocalStorage, jika tiada, ambil dari fail JS statik
+        function initializeDB() {
+            const localData = localStorage.getItem('dbss_inventory');
             
-            // GABUNGKAN KESEMUA 5 FAIL PANGKALAN DATA
-            dbItems = [...cams, ...recs, ...netcams, ...netrecs, ...accessories];
-        } catch (error) {
-            console.error("Gagal menggabungkan pangkalan data.", error);
+            if (localData) {
+                // Jika peranti sudah ada memori, gunakan data memori (supaya yg baru ditambah tidak hilang)
+                dbItems = JSON.parse(localData);
+            } else {
+                // Jika baru pertama kali buka, sedut dari fail statik dan simpan ke memori
+                try {
+                    const cams = typeof dahuaCameras !== 'undefined' ? dahuaCameras : [];
+                    const recs = typeof dahuaRecorders !== 'undefined' ? dahuaRecorders : [];
+                    const netcams = typeof dahuaNetworkCameras !== 'undefined' ? dahuaNetworkCameras : []; 
+                    const netrecs = typeof dahuaNetworkRecorders !== 'undefined' ? dahuaNetworkRecorders : []; 
+                    const accessories = typeof dahuaAccessories !== 'undefined' ? dahuaAccessories : [];
+                    
+                    dbItems = [...cams, ...recs, ...netcams, ...netrecs, ...accessories];
+                    
+                    // Simpan ke LocalStorage
+                    localStorage.setItem('dbss_inventory', JSON.stringify(dbItems));
+                } catch (error) {
+                    console.error("Gagal memuatkan data awal.", error);
+                }
+            }
+            populateCategories();
+            renderInventory();
         }
 
+        // Kemaskini senarai Kategori secara automatik dalam dropdown (Datalist)
+        function populateCategories() {
+            const groupList = document.getElementById('groupList');
+            groupList.innerHTML = ''; // Kosongkan
+            
+            // Dapatkan senarai kategori unik dari pangkalan data
+            const uniqueGroups = [...new Set(dbItems.map(item => item.group))];
+            
+            uniqueGroups.forEach(group => {
+                if(group) {
+                    const option = document.createElement('option');
+                    option.value = group;
+                    groupList.appendChild(option);
+                }
+            });
+        }
+
+        // RENDER PAPARAN ITEM
         function renderInventory() {
             const container = document.getElementById('inventoryContainer');
             const searchQ = document.getElementById('searchInput').value.toLowerCase();
-            const groupFilter = document.getElementById('groupFilter').value;
+            const groupFilter = document.getElementById('groupFilter').value.toLowerCase();
             const markupPercent = parseFloat(document.getElementById('markupInput').value) || 0;
             
             container.innerHTML = ''; 
 
-            if (!dbItems || dbItems.length === 0) {
-                container.innerHTML = '<div style="color: var(--accent-orange); text-align: center; padding: 20px; font-family: \'JetBrains Mono\', monospace;">Sistem Mesej: Pangkalan data kosong. Pastikan fail berada dalam folder assets/js/db/</div>';
+            if (dbItems.length === 0) {
+                container.innerHTML = '<div style="color: var(--accent-orange); text-align: center; padding: 20px;">Pangkalan data kosong. Sila tambah data.</div>';
                 return;
             }
 
-            // Filter data berganda: Ikut Kumpulan & Carian Teks
             const filteredData = dbItems.filter(item => {
                 const matchSearch = item.name.toLowerCase().includes(searchQ) || item.id.toLowerCase().includes(searchQ);
-                const matchGroup = groupFilter === 'ALL' ? true : item.group === groupFilter;
+                const matchGroup = groupFilter === '' ? true : (item.group && item.group.toLowerCase().includes(groupFilter));
                 return matchSearch && matchGroup;
             });
 
             if (filteredData.length === 0) {
-                container.innerHTML = `<div style="text-align: center; color: #A0AEC0; padding: 20px; font-family: 'JetBrains Mono', monospace;">0 ITEMS FOUND</div>`;
+                container.innerHTML = `<div style="text-align: center; color: #A0AEC0; padding: 20px;">0 ITEMS FOUND</div>`;
                 return;
             }
 
-            filteredData.forEach(item => {
-                const markupAmount = item.cost * (markupPercent / 100);
-                const sellingPrice = item.cost + markupAmount;
+            // Loop untuk setiap item yang ditapis
+            filteredData.forEach((item, index) => {
+                // Cari index sebenar dalam dbItems asal untuk tujuan Edit/Padam
+                const realIndex = dbItems.findIndex(x => x.id === item.id && x.name === item.name);
+                
+                let costDisplay = "";
+                let sellDisplay = "";
+
+                if (item.cost === 0 || item.cost === "0") {
+                    costDisplay = `<span style="color: var(--accent-orange);">RUJUK SUPPLIER</span>`;
+                    sellDisplay = `<span class="ask-price">ASK PRICE</span>`;
+                } else {
+                    const markupAmount = parseFloat(item.cost) * (markupPercent / 100);
+                    const sellingPrice = parseFloat(item.cost) + markupAmount;
+                    costDisplay = `RM ${parseFloat(item.cost).toFixed(2)}`;
+                    sellDisplay = `RM ${sellingPrice.toFixed(2)}`;
+                }
 
                 const card = document.createElement('div');
                 card.className = 'item-card';
                 
                 card.innerHTML = `
                     <div class="item-details">
-                        <div class="category">[${item.group}]</div>
+                        <div class="category">[${item.group || 'TIADA KUMPULAN'}] ${item.brand ? ' | '+item.brand : ''}</div>
                         <div class="name">${item.id} - ${item.name}</div>
                     </div>
                     <div class="price-section">
-                        <div class="cost">RM ${item.cost.toFixed(2)}</div>
-                        <div class="sell">RM ${sellingPrice.toFixed(2)}</div>
+                        <div class="cost">${costDisplay}</div>
+                        <div class="sell">${sellDisplay}</div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="action-icon" onclick="editItem(${realIndex})">EDIT</button>
+                        <button class="action-icon delete" onclick="deleteItem(${realIndex})">PADAM</button>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        window.onload = renderInventory;
+        // FUNGSI: Buka Modal
+        function openModal(isEdit = false, index = null) {
+            document.getElementById('itemModal').style.display = 'flex';
+            
+            if (isEdit && index !== null) {
+                document.getElementById('modalTitle').innerText = "SUNTING DATA";
+                document.getElementById('editIndex').value = index;
+                
+                const item = dbItems[index];
+                document.getElementById('modalId').value = item.id;
+                document.getElementById('modalName').value = item.name;
+                document.getElementById('modalGroup').value = item.group;
+                document.getElementById('modalBrand').value = item.brand || '';
+                document.getElementById('modalCost').value = item.cost;
+            } else {
+                document.getElementById('modalTitle').innerText = "TAMBAH PERKAKASAN BARU";
+                document.getElementById('editIndex').value = "";
+                document.getElementById('modalId').value = "";
+                document.getElementById('modalName').value = "";
+                document.getElementById('modalGroup').value = document.getElementById('groupFilter').value || "";
+                document.getElementById('modalBrand').value = "";
+                document.getElementById('modalCost').value = "";
+            }
+        }
+
+        // FUNGSI: Tutup Modal
+        function closeModal() {
+            document.getElementById('itemModal').style.display = 'none';
+        }
+
+        // FUNGSI: Simpan Data (Tambah Baru atau Update)
+        function saveItem() {
+            const index = document.getElementById('editIndex').value;
+            const newItem = {
+                id: document.getElementById('modalId').value.toUpperCase(),
+                name: document.getElementById('modalName').value,
+                group: document.getElementById('modalGroup').value.toUpperCase(),
+                brand: document.getElementById('modalBrand').value.toUpperCase(),
+                cost: parseFloat(document.getElementById('modalCost').value) || 0
+            };
+
+            if (!newItem.id || !newItem.name || !newItem.group) {
+                alert("Sistem Mesej: Sila isi ruangan ID, Nama, dan Kategori.");
+                return;
+            }
+
+            if (index !== "") {
+                // Update sedia ada
+                dbItems[index] = newItem;
+            } else {
+                // Tambah baru ke dalam senarai (letakan di atas sekali)
+                dbItems.unshift(newItem);
+            }
+
+            // Simpan ke LocalStorage
+            localStorage.setItem('dbss_inventory', JSON.stringify(dbItems));
+            
+            closeModal();
+            populateCategories();
+            renderInventory();
+        }
+
+        // FUNGSI: Padam Data
+        function deleteItem(index) {
+            if (confirm("Amaran: Adakah anda pasti mahu memadam perkakasan ini dari pangkalan data?")) {
+                dbItems.splice(index, 1);
+                localStorage.setItem('dbss_inventory', JSON.stringify(dbItems));
+                populateCategories();
+                renderInventory();
+            }
+        }
+
+        function editItem(index) {
+            openModal(true, index);
+        }
+
+        // Mulakan sistem
+        window.onload = initializeDB;
     </script>
 </body>
 </html>
