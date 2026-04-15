@@ -178,15 +178,17 @@
 
     <script src="assets/js/db/db-dahua-camera.js"></script>
     <script src="assets/js/db/db-dahua-recorder.js"></script>
-    <script>
+    <script src="assets/js/db/db-dahua-network.js"></script> <script>
         // Logik Penggabungan (Merge) Master Database
         let dbItems = [];
         try {
             // Kita semak jika fail JS wujud sebelum gabungkan (untuk elak ralat jika fail tiada)
             const cams = typeof dahuaCameras !== 'undefined' ? dahuaCameras : [];
             const recs = typeof dahuaRecorders !== 'undefined' ? dahuaRecorders : [];
+            const netcams = typeof dahuaNetworkCameras !== 'undefined' ? dahuaNetworkCameras : []; // PEMBOLEHUBAH BARU
             
-            dbItems = [...cams, ...recs];
+            // GABUNGKAN SEMUA
+            dbItems = [...cams, ...recs, ...netcams];
         } catch (error) {
             console.error("Gagal menggabungkan pangkalan data.", error);
         }
