@@ -62,14 +62,14 @@
                         <label>Status Pendawaian (Wiring)</label>
                         <select id="wiring-status">
                             <option value="ready">Sedia Ada / Surface (+RM0)</option>
-                            <option value="conceal">Tanam / Hacking (+RM200)</option>
+                            <option value="conceal">Tanam / Hacking (+Caj Tambahan)</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Jenis Siling</label>
                         <select id="ceiling-type">
                             <option value="plaster">Siling Plaster (+RM0)</option>
-                            <option value="concrete">Konkrit / Casing (+RM150)</option>
+                            <option value="concrete">Konkrit / Casing (+Caj Tambahan)</option>
                         </select>
                     </div>
                 </div>
@@ -84,10 +84,10 @@
                     <div class="form-group">
                         <label>Pakej / Jenis Kamera</label>
                         <select id="cctv-type">
-                            <option value="cam_analog">Analog HD 2MP</option>
-                            <option value="cam_4mp" selected>Analog/IP 4MP</option>
-                            <option value="cam_colorvu">ColorVu 4MP/5MP</option>
-                            <option value="cam_ptz">PTZ Camera</option>
+                            <option value="cam_analog">Dahua Analog HD 2MP</option>
+                            <option value="cam_4mp" selected>Dahua Analog 5MP</option>
+                            <option value="cam_colorvu">Dahua ColorVu 2MP</option>
+                            <option value="cam_ptz">Dahua PTZ Camera</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -95,19 +95,19 @@
                         <input type="number" id="qty-cctv" value="4" min="0">
                     </div>
                     <div class="form-group">
-                        <label>Jenis Decoder (DVR/NVR)</label>
+                        <label>Jenis Decoder (XVR/NVR)</label>
                         <select id="decoder-type">
-                            <option value="dec_4ch">4 Channel</option>
-                            <option value="dec_8ch">8 Channel</option>
-                            <option value="dec_16ch">16 Channel</option>
+                            <option value="dec_4ch">4 Channel XVR</option>
+                            <option value="dec_8ch">8 Channel XVR</option>
+                            <option value="dec_16ch">16 Channel XVR</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Power Supply (Ampere)</label>
                         <select id="psu-type">
-                            <option value="psu_5a">5A (Sesuai 1-4 Kamera)</option>
-                            <option value="psu_10a">10A (Sesuai 5-8 Kamera)</option>
-                            <option value="psu_20a">20A/30A (Sesuai 9-16 Kamera)</option>
+                            <option value="psu_5a">5A Adaptor (1-4 Kamera)</option>
+                            <option value="psu_10a">10A Metal Box (5-8 Kamera)</option>
+                            <option value="psu_20a">20A Metal Box (9-16 Kamera)</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -124,8 +124,8 @@
                     <div class="form-group">
                         <label>Kualiti Balun (Jika Pilih UTP)</label>
                         <select id="balun-type">
-                            <option value="bal_2mp">Balun Standard (Tahan sehingga 2MP)</option>
-                            <option value="bal_5mp">Balun High Quality (Tahan sehingga 5MP/8MP)</option>
+                            <option value="bal_2mp">Balun Standard (2MP)</option>
+                            <option value="bal_5mp">Balun High Quality (5MP/8MP)</option>
                         </select>
                     </div>
                 </div>
@@ -161,61 +161,23 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        
-        // 1. IMPORT DATA DARI FAIL PRICELIST (Dealer Price & Markup)
-        import { senaraiSupplier, markupKeuntungan } from './pricelist.js';
-
-        const firebaseConfig = {
-            apiKey: "MASUKKAN_API_KEY_NANTI",
-            authDomain: "db-smarthome-app.firebaseapp.com",
-            projectId: "db-smarthome-app"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // HARGA PERKHIDMATAN/UPAH (Kekal di sini kerana ia bukan barang fizikal supplier)
-        let hargaServis = {
-            alarm_basic: 450,
-            alarm_pro: 850,
-            upah_asas: 300,
-            caj_concrete: 150,
-            caj_conceal: 200
-        };
-
-        async function muatTurunHargaServis() {
-            try {
-                // Kelak anda boleh update upah dari Firebase
-                const docRef = doc(db, "tetapan_sistem", "harga_servis");
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    hargaServis = { ...hargaServis, ...docSnap.data() };
-                    document.getElementById('db-status').innerText = "DB: CLOUD";
-                }
-            } catch (error) {
-                console.log("Firebase belum sedia. Guna harga offline.");
-            }
-        }
-        muatTurunHargaServis();
+        import { senaraiSupplier, hargaServis, markupKeuntungan } from './pricelist.js';
 
         let currentTotal = 0;
         let bomText = "";
 
-        // Fungsi Pintar untuk mengenakan Markup pada Harga Kos
+        // Fungsi mengenakan Markup pada Harga Kos (Dealer Price)
         function kiraHargaJual(hargaKosSupplier) {
             return hargaKosSupplier + (hargaKosSupplier * markupKeuntungan);
         }
 
         window.calculateQuote = function() {
-            let s = hargaServis;
-            
-            // 1. KIRA UPAH & CAJ KERJA
-            let kosUpah = s.upah_asas; 
-            if (document.getElementById('ceiling-type').value === 'concrete') kosUpah += s.caj_concrete; 
-            if (document.getElementById('wiring-status').value === 'conceal') kosUpah += s.caj_conceal;
+            // 1. KIRA UPAH & CAJ KERJA (Tanpa Markup)
+            let kosUpah = hargaServis.upah_asas; 
+            if (document.getElementById('ceiling-type').value === 'concrete') kosUpah += hargaServis.caj_concrete; 
+            if (document.getElementById('wiring-status').value === 'conceal') kosUpah += hargaServis.caj_conceal;
 
-            // 2. KIRA HARDWARE UTAMA (Ambil dari pricelist.js dan Markup Automatik)
+            // 2. KIRA HARDWARE UTAMA (Kamera, Decoder, PSU + Markup)
             let qtyCam = parseInt(document.getElementById('qty-cctv').value) || 0;
             let kosKamera = 0, kosDecoder = 0, kosPsu = 0;
             
@@ -230,12 +192,12 @@
                 kosPsu = kiraHargaJual(senaraiSupplier.psu[idPsu].hargaKos);
             }
             
-            // 3. KIRA KABEL (Markup Automatik)
+            // 3. KIRA KABEL (+ Markup)
             let qtyKabel = parseInt(document.getElementById('qty-cable').value) || 0;
             let idKabel = document.getElementById('cable-type').value;
             let kosKabel = qtyKabel * kiraHargaJual(senaraiSupplier.kabel[idKabel].hargaKos);
 
-            // 4. KIRA PENYAMBUNG / CONNECTORS
+            // 4. KIRA PENYAMBUNG / CONNECTORS (+ Markup)
             let kosPenyambung = 0;
             let detailPenyambung = "";
             let hargaBNC = kiraHargaJual(senaraiSupplier.aksesori.bnc.hargaKos);
@@ -243,13 +205,13 @@
             
             if (qtyCam > 0) {
                 if (idKabel === 'cab_utp') {
-                    // UTP: Balun + DC per kamera
+                    // Jika UTP: Guna Balun + DC per kamera
                     let idBalun = document.getElementById('balun-type').value;
                     let hargaBalun = kiraHargaJual(senaraiSupplier.aksesori[idBalun].hargaKos);
                     kosPenyambung = qtyCam * (hargaBalun + hargaDC);
                     detailPenyambung = `${qtyCam}x Balun & DC`;
                 } else {
-                    // RG59: 2 BNC + 1 DC per kamera
+                    // Jika RG59: Guna 2 BNC + 1 DC per kamera
                     kosPenyambung = qtyCam * ((hargaBNC * 2) + hargaDC);
                     detailPenyambung = `${qtyCam * 2}x BNC & ${qtyCam}x DC`;
                 }
@@ -258,13 +220,13 @@
             // 5. KIRA ALARM
             let kosAlarm = 0;
             let valAlarm = parseInt(document.getElementById('qty-alarm').value);
-            if (valAlarm === 1) kosAlarm = s.alarm_basic;
-            if (valAlarm === 2) kosAlarm = s.alarm_pro;
+            if (valAlarm === 1) kosAlarm = hargaServis.alarm_basic;
+            if (valAlarm === 2) kosAlarm = hargaServis.alarm_pro;
 
-            // JUMLAH KESELURUHAN SELEPAS MARKUP
+            // JUMLAH KESELURUHAN (UPAH + SEMUA BARANG SELEPAS MARKUP)
             currentTotal = kosUpah + kosKamera + kosDecoder + kosPsu + kosKabel + kosPenyambung + kosAlarm;
 
-            // PAPARAN PECAHAN (BOM BREAKDOWN) UNTUK ADMIN SAHAJA
+            // PAPARAN PECAHAN RESIT (BOM BREAKDOWN) UNTUK ADMIN SAHAJA
             bomText = `
                 [+] Upah & Wiring: RM${kosUpah.toFixed(2)}<br>
                 [+] ${qtyCam}x Kamera: RM${kosKamera.toFixed(2)}<br>
@@ -286,15 +248,20 @@
             const qtyCam = document.getElementById('qty-cctv').value;
             const jenisKabel = document.getElementById('cable-type').options[document.getElementById('cable-type').selectedIndex].text;
             
+            // Tarik NAMA SEBENAR model kamera dari pricelist.js
+            const idCamSelected = document.getElementById('cctv-type').value;
+            const cctvModelName = senaraiSupplier.kamera[idCamSelected].nama;
+            
             if (!phone) {
                 alert("Sila masukkan No WhatsApp pelanggan dahulu.");
                 return;
             }
 
+            // Format Nombor Telefon Antarabangsa (60)
             let formattedPhone = phone.replace(/\D/g, ''); 
             if (formattedPhone.startsWith('0')) formattedPhone = '6' + formattedPhone;
 
-            const message = `Salam Tuan/Puan ${name},\n\nTerima kasih kerana berminat dengan *dB Smarthome & Security*.\n\nBerikut adalah sebut harga rasmi untuk sistem keselamatan premis anda:\n\n📷 *Spesifikasi Sistem:*\n- ${qtyCam} Unit CCTV\n- Decoder/NVR Unit\n- Power Supply Centralized\n- Pendawaian ${jenisKabel}\n- Termasuk Pemasangan & Konfigurasi Online\n\n🛠️ *Jumlah Keseluruhan: RM ${currentTotal.toFixed(2)}*\n\nSila maklumkan jika anda setuju untuk kami teruskan dengan lawatan tapak susulan atau penjadualan pemasangan. Terima kasih!`;
+            const message = `Salam Tuan/Puan ${name},\n\nTerima kasih kerana berminat dengan *dB Smarthome & Security*.\n\nBerikut adalah sebut harga rasmi untuk sistem keselamatan premis anda:\n\n📷 *Spesifikasi Sistem:*\n- ${qtyCam} Unit CCTV (${cctvModelName})\n- Decoder/NVR Unit\n- Power Supply Centralized\n- Pendawaian ${jenisKabel}\n- Termasuk Pemasangan & Konfigurasi Online\n\n🛠️ *Jumlah Keseluruhan: RM ${currentTotal.toFixed(2)}*\n\nSila maklumkan jika anda setuju untuk kami teruskan dengan lawatan tapak susulan atau penjadualan pemasangan. Terima kasih!`;
 
             const waLink = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
             window.open(waLink, '_blank');
