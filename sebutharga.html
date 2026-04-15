@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DBSS OS | Quotation</title>
+    <title>DBSS OS | Site Visit & Quotation</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,6 +13,7 @@
             --text-main: #FFFFFF;
             --accent-blue: #007BFF;
             --accent-lime: #39FF14;
+            --accent-orange: #FFA500;
         }
 
         body {
@@ -25,123 +26,159 @@
         }
 
         .top-header {
-            padding: 20px;
+            padding: 15px 20px;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--glass-border);
             position: sticky;
             top: 0;
             z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .module-title { font-weight: 700; font-size: 16px; color: var(--accent-lime); letter-spacing: 1px;}
+        .live-status { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent-orange); animation: pulse 2s infinite; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
 
         .container {
-            padding: 20px;
+            padding: 15px;
             max-width: 800px;
             margin: 0 auto;
         }
 
-        /* Glass Form */
+        /* Glass Form Panels */
         .glass-panel {
             background: var(--glass-bg);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--glass-border);
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
         }
 
-        h2 { margin-top: 0; font-size: 16px; color: var(--accent-blue); letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase;}
+        .glass-panel.highlight-panel {
+            border-left: 3px solid var(--accent-blue);
+        }
 
-        input {
+        h2 { margin-top: 0; font-size: 14px; color: var(--accent-blue); letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;}
+
+        input, select, textarea {
             width: 100%;
             padding: 12px;
-            margin-bottom: 15px;
-            background: rgba(0,0,0,0.3);
+            margin-bottom: 12px;
+            background: rgba(0,0,0,0.4);
             border: 1px solid var(--glass-border);
             border-radius: 8px;
             color: var(--text-main);
             box-sizing: border-box;
             font-family: 'Inter', sans-serif;
+            font-size: 14px;
         }
 
-        input:focus { outline: none; border-color: var(--accent-blue); }
+        textarea { resize: vertical; min-height: 80px; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent-blue); }
+        select { appearance: none; color: var(--accent-lime); font-weight: 600;}
+
+        /* Grid untuk input sebaris pada skrin telefon */
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
         .btn-add {
-            width: 100%;
-            background: transparent;
-            border: 1px dashed var(--accent-lime);
-            color: var(--accent-lime);
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 20px;
+            width: 100%; background: transparent; border: 1px dashed var(--accent-lime);
+            color: var(--accent-lime); padding: 12px; border-radius: 8px; font-weight: 600;
+            cursor: pointer; margin-bottom: 15px; transition: all 0.2s;
         }
+        .btn-add:active { background: rgba(57, 255, 20, 0.1); transform: scale(0.98);}
 
-        .btn-add:active { background: rgba(57, 255, 20, 0.1); }
+        .btn-execute {
+            width: 100%; background: var(--accent-blue); border: none;
+            color: #fff; padding: 15px; border-radius: 8px; font-weight: 700;
+            cursor: pointer; letter-spacing: 1px; font-family: 'JetBrains Mono', monospace;
+        }
 
         /* Respon Table */
-        .table-wrapper { overflow-x: auto; }
+        .table-wrapper { overflow-x: auto; margin-bottom: 10px; }
         table { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
-        th, td { text-align: left; padding: 10px; border-bottom: 1px solid var(--glass-border); white-space: nowrap; }
+        th, td { text-align: left; padding: 10px 5px; border-bottom: 1px solid var(--glass-border); white-space: nowrap; }
         th { color: #A0AEC0; font-weight: normal; }
+        .row-total { color: var(--accent-lime); }
 
         .total-display {
-            text-align: right;
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--accent-lime);
-            margin-top: 15px;
-            font-family: 'JetBrains Mono', monospace;
+            text-align: right; font-size: 22px; font-weight: 700;
+            color: var(--text-main); margin-top: 10px; font-family: 'JetBrains Mono', monospace;
         }
+        .total-display span { color: var(--accent-lime); }
 
-        /* Bottom Nav (Sama macam Dashboard) */
+        /* Bottom Nav */
         .bottom-nav {
-            position: fixed;
-            bottom: 0; left: 0; width: 100%; height: 70px;
-            background: rgba(13, 27, 42, 0.9);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border-top: 1px solid var(--glass-border);
-            display: flex; justify-content: space-around; align-items: center; z-index: 1000;
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
+            background: rgba(13, 27, 42, 0.9); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-top: 1px solid var(--glass-border); display: flex; justify-content: space-around; align-items: center; z-index: 1000;
         }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #A0AEC0; text-decoration: none; font-size: 10px; gap: 5px; }
         .nav-item.active { color: var(--accent-blue); }
         .nav-item svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-
     </style>
 </head>
 <body>
 
     <header class="top-header">
-        <div style="font-weight: 700; font-size: 18px; color: var(--accent-lime);">MODULE: QUOTATION</div>
+        <div class="module-title">MODULE: ON-SITE QUOTE</div>
+        <div class="live-status">REC_SITE_DATA</div>
     </header>
 
     <div class="container">
-        <div class="glass-panel">
-            <h2>Data Pelanggan</h2>
-            <input type="text" placeholder="Nama Klien">
-            <input type="text" placeholder="Alamat Tapak / Lokasi">
+        
+        <div class="glass-panel highlight-panel">
+            <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> 1. Site Assessment</h2>
+            
+            <input type="text" id="clientName" placeholder="Nama Pelanggan / Projek">
+            
+            <div class="input-grid">
+                <select id="systemType">
+                    <option value="CCTV">Sistem CCTV</option>
+                    <option value="ALARM">Sistem Alarm</option>
+                    <option value="AUTOGATE">Autogate</option>
+                    <option value="SOLAR">Sistem Solar</option>
+                    <option value="MIX">Gabungan (Kompilasi)</option>
+                </select>
+                <select id="siteCondition">
+                    <option value="Surface">Wiring Surface (PVC)</option>
+                    <option value="Conceal">Wiring Conceal (Hack)</option>
+                    <option value="Roof">Laluan Bumbung</option>
+                </select>
+            </div>
+
+            <textarea id="siteNotes" placeholder="Nota Tapak (Cth: Perlu tangga panjang, dinding konkrit tebal, anggaran kabel 150m...)"></textarea>
         </div>
 
         <div class="glass-panel">
-            <h2>Data Sistem</h2>
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="itemName" placeholder="Item (cth: Kamera 2MP)" style="flex: 2;">
-                <input type="number" id="itemQty" placeholder="Kuantiti" style="flex: 1;">
-            </div>
-            <input type="number" id="itemPrice" placeholder="Harga Seunit (RM)">
+            <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg> 2. System Variables</h2>
             
-            <button class="btn-add" onclick="addItem()">+ INSERT DATA</button>
+            <input type="text" id="itemName" placeholder="Perkakasan (cth: Kamera Dome 2MP)">
+            
+            <div class="input-grid">
+                <input type="number" id="itemQty" placeholder="Kuantiti">
+                <input type="number" id="itemPrice" placeholder="Harga / Unit (RM)">
+            </div>
+            
+            <button class="btn-add" onclick="addItem()">+ INJECT HARDWARE DATA</button>
 
             <div class="table-wrapper">
-                <table>
+                <table id="quoteTable" style="display: none;">
                     <thead>
                         <tr>
                             <th>Item</th>
                             <th>Qty</th>
-                            <th>RM/Unit</th>
-                            <th>Subtotal</th>
+                            <th>RM</th>
+                            <th>Sub</th>
                         </tr>
                     </thead>
                     <tbody id="itemsBody"></tbody>
@@ -149,9 +186,12 @@
             </div>
 
             <div class="total-display">
-                TOTAL: RM <span id="grandTotal">0.00</span>
+                EST: RM <span id="grandTotal">0.00</span>
             </div>
         </div>
+
+        <button class="btn-execute" onclick="compileData()">COMPILE & PUSH TO WHATSAPP</button>
+
     </div>
 
     <nav class="bottom-nav">
@@ -171,28 +211,50 @@
 
     <script>
         let grandTotal = 0;
+        let itemsList = [];
+
         function addItem() {
             const name = document.getElementById('itemName').value;
             const qty = parseFloat(document.getElementById('itemQty').value);
             const price = parseFloat(document.getElementById('itemPrice').value);
 
-            if (!name || isNaN(qty) || isNaN(price)) return;
+            if (!name || isNaN(qty) || isNaN(price)) {
+                alert("Sistem Mesej: Sila lengkapkan data perkakasan.");
+                return;
+            }
 
             const total = qty * price;
             grandTotal += total;
+            
+            // Simpan data untuk di eksport nanti
+            itemsList.push({ name, qty, price, total });
 
+            document.getElementById('quoteTable').style.display = "table";
             const row = document.getElementById('itemsBody').insertRow();
             row.innerHTML = `
                 <td>${name}</td>
                 <td>${qty}</td>
-                <td>${price.toFixed(2)}</td>
-                <td style="color: var(--accent-lime);">${total.toFixed(2)}</td>
+                <td>${price.toFixed(0)}</td>
+                <td class="row-total">${total.toFixed(0)}</td>
             `;
 
             document.getElementById('grandTotal').innerText = grandTotal.toFixed(2);
             document.getElementById('itemName').value = '';
             document.getElementById('itemQty').value = '';
             document.getElementById('itemPrice').value = '';
+            
+            // Fokus semula ke input nama item untuk kemasukan pantas
+            document.getElementById('itemName').focus();
+        }
+
+        // FUNGSI AKAN DATANG: Hantar terus data ke WhatsApp pelanggan
+        function compileData() {
+            const client = document.getElementById('clientName').value;
+            if(!client || itemsList.length === 0) {
+                alert("Sistem Mesej: Nama pelanggan atau senarai perkakasan kosong.");
+                return;
+            }
+            alert("Fungsi simulasi: Data sebutharga untuk " + client + " bersedia untuk di 'push' ke WhatsApp/PDF. Backend diperlukan untuk eksekusi penuh.");
         }
     </script>
 </body>
