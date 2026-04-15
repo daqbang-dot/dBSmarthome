@@ -180,19 +180,19 @@
     <script src="assets/js/db/db-dahua-recorder.js"></script>
     <script src="assets/js/db/db-dahua-network.js"></script>
     <script src="assets/js/db/db-dahua-network-recorder.js"></script>
-
-    <script>
+    <script src="assets/js/db/db-dahua-accessories.js"></script> <script>
         // Logik Penggabungan (Merge) Master Database
         let dbItems = [];
         try {
-            // Kita semak jika fail JS wujud sebelum gabungkan (untuk elak ralat jika fail tiada)
+            // Semak jika fail JS wujud sebelum gabungkan
             const cams = typeof dahuaCameras !== 'undefined' ? dahuaCameras : [];
             const recs = typeof dahuaRecorders !== 'undefined' ? dahuaRecorders : [];
             const netcams = typeof dahuaNetworkCameras !== 'undefined' ? dahuaNetworkCameras : []; 
             const netrecs = typeof dahuaNetworkRecorders !== 'undefined' ? dahuaNetworkRecorders : []; 
+            const accessories = typeof dahuaAccessories !== 'undefined' ? dahuaAccessories : []; // PEMBOLEHUBAH BARU
             
-            // GABUNGKAN KESEMUA 4 FAIL PANGKALAN DATA
-            dbItems = [...cams, ...recs, ...netcams, ...netrecs];
+            // GABUNGKAN KESEMUA 5 FAIL PANGKALAN DATA
+            dbItems = [...cams, ...recs, ...netcams, ...netrecs, ...accessories];
         } catch (error) {
             console.error("Gagal menggabungkan pangkalan data.", error);
         }
@@ -229,7 +229,6 @@
                 const card = document.createElement('div');
                 card.className = 'item-card';
                 
-                // Gunakan item.group untuk memaparkan nama kumpulan sebenar
                 card.innerHTML = `
                     <div class="item-details">
                         <div class="category">[${item.group}]</div>
