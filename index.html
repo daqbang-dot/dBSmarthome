@@ -3,58 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dB Smarthome & Security | Mission Control</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <title>dB Smarthome & Security | Command Center</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="command-center">
         <header class="top-bar glass-effect">
-            <div class="brand">
-                <h1>dB<span class="neon-text">SECURITY</span></h1>
+            <div>
+                <h1 class="brand-name">
+                    dB<span style="color: var(--text-main);">Smarthome</span><span style="color: var(--text-muted);">&</span><span style="color: var(--accent-green);">Security</span>
+                </h1>
+                <p class="brand-tagline">Satu Ketikan, Seribu Solusi.</p>
+                <div class="brand-declaration tech-font">DB SMARTHOME | COMMAND YOUR SECURITY</div>
             </div>
-            <div class="system-status">
-                <span class="status-text">NETWORK SECURE</span>
-                <span class="indicator-dot online"></span>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: 5px;">
+                <span class="tech-font" style="font-size: 0.8rem; color: var(--text-muted);">SYSTEM STATUS</span>
+                <span class="tech-font" style="font-size: 0.8rem; color: var(--accent-green);">SECURE <span class="indicator-dot online"></span></span>
             </div>
         </header>
 
         <main class="dashboard">
-            <section class="panel glass-effect privacy-zone">
+            
+            <section style="margin-bottom: 20px;">
+                <a href="assessment.html" class="btn-action btn-execute">
+                    > INITIATE SITE ASSESSMENT _
+                </a>
+            </section>
+
+            <section class="panel glass-effect">
                 <div class="panel-header">
-                    <h2>PRIVACY</h2>
-                    <span class="badge active">SECURE</span>
+                    <h2>PRIVACY ZONE</h2>
+                    <span class="badge active">ONLINE</span>
                 </div>
                 <div class="panel-content">
-                    <p class="data-text">Kamera Dalaman: OFF (Mod Privasi)</p>
-                    <p class="data-text">Akses Pintu: DIKUNCI</p>
+                    <p class="data-text" style="color: var(--text-muted); font-size: 0.9rem;">INT_CAM_01 : <span style="color: var(--accent-orange);">STANDBY</span></p>
+                    <p class="data-text" style="color: var(--text-muted); font-size: 0.9rem;">MAIN_DOOR  : <span style="color: var(--accent-green);">LOCKED</span></p>
                 </div>
             </section>
 
-            <section class="panel glass-effect business-zone">
+            <section class="panel glass-effect">
                 <div class="panel-header">
-                    <h2>BUSINESS</h2>
-                    <span class="badge alert">MONITORING</span>
+                    <h2>BUSINESS PERIMETER</h2>
+                    <span class="badge alert">RECORDING</span>
                 </div>
                 <div class="panel-content">
-                    <p class="data-text">CCTV Perimeter Utama: LIVE (4K)</p>
-                    <div class="video-placeholder">Feed Video (Akan Datang)</div>
+                    <p class="data-text" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px;">EXT_CAM_ARRAY : LIVE_FEED</p>
+                    <div style="width: 100%; height: 120px; background: #000; border: 1px solid var(--accent-blue); border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                        <span class="tech-font" style="color: var(--accent-blue); font-size: 0.8rem;">[ VIDEO_FEED_AWAITING_UPLINK ]</span>
+                    </div>
                 </div>
             </section>
 
-            <section class="panel glass-effect work-zone">
+            <section class="panel glass-effect">
                 <div class="panel-header">
-                    <h2>WORK</h2>
-                    <span class="badge info">LOGS</span>
+                    <h2>SYSTEM LOGS</h2>
+                    <span class="badge info">SYNCED</span>
                 </div>
                 <div class="panel-content">
-                    <p class="data-text" id="time-log">Semakan Pelayan: Mengemaskini...</p>
-                    <p class="data-text">Status API: Menunggu Sambungan</p>
+                    <p class="data-text" id="time-log" style="color: var(--accent-green); font-size: 0.85rem;">[DATETIME] SYSTEM_OK</p>
                 </div>
             </section>
+
         </main>
     </div>
-    
-    <script src="script.js"></script>
+
+    <script type="module">
+        // Simulasi Log Masa berasaskan font teknikal
+        function updateSystemLog() {
+            const logElement = document.getElementById('time-log');
+            if (logElement) {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('ms-MY', { hour12: false });
+                logElement.textContent = `[${timeString}] PING_RESPONSE_OK`;
+            }
+        }
+        setInterval(updateSystemLog, 1000);
+        updateSystemLog();
+    </script>
 </body>
 </html>
