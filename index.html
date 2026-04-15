@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBSS OS | Secure Login</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #0D1B2A;
+            --bg-card: #121212;
+            --text-main: #FFFFFF;
+            --text-muted: #A0AEC0;
+            --accent-blue: #007BFF;
+            --accent-lime: #39FF14;
+            --accent-orange: #FFA500;
+            --border-color: #2D3748;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: radial-gradient(circle at center, #1a2a3a 0%, var(--bg-dark) 100%);
+        }
+
+        .login-container {
+            background-color: var(--bg-card);
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .brand-logo {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+        }
+
+        .brand-logo span {
+            color: var(--accent-lime); /* Ikon kursor klik ganti 'i' atau titik */
+        }
+
+        .system-name {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .tagline {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            background-color: #0D1B2A;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--accent-lime);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+        }
+
+        .form-group input::placeholder {
+            color: #4A5568;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: var(--accent-blue);
+            color: var(--text-main);
+            border: none;
+            padding: 15px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+
+        .status-msg {
+            margin-top: 15px;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-orange);
+            display: none; /* Disembunyikan secara lalai */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="brand-logo">dbss<span>&#8599;</span></div>
+        <div class="system-name">DBSS OS | COMMAND YOUR DATA</div>
+        <div class="tagline">Satu Ketikan, Seribu Solusi.</div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">ID Pengguna</label>
+                <input type="text" id="username" placeholder="Masukkan ID Sistem" required autocomplete="off">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Kata Laluan Pintasan</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn-submit">Execute Process</button>
+        </form>
+
+        <div class="status-msg" id="statusMessage">Akses Ditolak. Sila semak kredensial.</div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Elak halaman dari refresh
+            
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            const statusMsg = document.getElementById('statusMessage');
+
+            // Logik sementara sebelum kita bina backend (Acode -> Firebase dll)
+            // Untuk fasa ini, apa-apa input akan terus ke dashboard
+            if (user !== "" && pass !== "") {
+                // Berjaya
+                statusMsg.style.color = "var(--accent-lime)";
+                statusMsg.innerText = "Akses Dibenarkan. Mengalihkan...";
+                statusMsg.style.display = "block";
+                
+                // Alih ke dashboard selepas 1 saat
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 1000);
+            } else {
+                // Gagal
+                statusMsg.style.color = "var(--accent-orange)";
+                statusMsg.innerText = "Ralat Operasi: Input tidak lengkap.";
+                statusMsg.style.display = "block";
+            }
+        });
+    </script>
+
+</body>
+</html>
