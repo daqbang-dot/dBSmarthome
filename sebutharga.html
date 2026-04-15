@@ -47,11 +47,7 @@
             100% { opacity: 1; }
         }
 
-        .container {
-            padding: 15px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
+        .container { padding: 15px; max-width: 800px; margin: 0 auto; }
 
         /* Glass Form Panels */
         .glass-panel {
@@ -64,30 +60,21 @@
             margin-bottom: 15px;
         }
 
-        .glass-panel.highlight-panel {
-            border-left: 3px solid var(--accent-blue);
-        }
+        .glass-panel.highlight-panel { border-left: 3px solid var(--accent-blue); }
 
         h2 { margin-top: 0; font-size: 14px; color: var(--accent-blue); letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;}
 
         input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 12px;
-            background: rgba(0,0,0,0.4);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            color: var(--text-main);
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
+            width: 100%; padding: 12px; margin-bottom: 12px;
+            background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border);
+            border-radius: 8px; color: var(--text-main); box-sizing: border-box;
+            font-family: 'Inter', sans-serif; font-size: 14px;
         }
 
         textarea { resize: vertical; min-height: 80px; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent-blue); }
         select { appearance: none; color: var(--accent-lime); font-weight: 600;}
 
-        /* Grid untuk input sebaris pada skrin telefon */
         .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
         .btn-add {
@@ -110,16 +97,13 @@
         th { color: #A0AEC0; font-weight: normal; }
         .row-total { color: var(--accent-lime); }
 
-        .total-display {
-            text-align: right; font-size: 22px; font-weight: 700;
-            color: var(--text-main); margin-top: 10px; font-family: 'JetBrains Mono', monospace;
-        }
+        .total-display { text-align: right; font-size: 22px; font-weight: 700; color: var(--text-main); margin-top: 10px; font-family: 'JetBrains Mono', monospace; }
         .total-display span { color: var(--accent-lime); }
 
-        /* Bottom Nav */
+        /* Bottom Nav Standard */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
-            background: rgba(13, 27, 42, 0.9); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            background: rgba(13, 27, 42, 0.9); backdrop-filter: blur(15px);
             border-top: 1px solid var(--glass-border); display: flex; justify-content: space-around; align-items: center; z-index: 1000;
         }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #A0AEC0; text-decoration: none; font-size: 10px; gap: 5px; }
@@ -138,9 +122,7 @@
         
         <div class="glass-panel highlight-panel">
             <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> 1. Site Assessment</h2>
-            
             <input type="text" id="clientName" placeholder="Nama Pelanggan / Projek">
-            
             <div class="input-grid">
                 <select id="systemType">
                     <option value="CCTV">Sistem CCTV</option>
@@ -155,20 +137,16 @@
                     <option value="Roof">Laluan Bumbung</option>
                 </select>
             </div>
-
             <textarea id="siteNotes" placeholder="Nota Tapak (Cth: Perlu tangga panjang, dinding konkrit tebal, anggaran kabel 150m...)"></textarea>
         </div>
 
         <div class="glass-panel">
             <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg> 2. System Variables</h2>
-            
             <input type="text" id="itemName" placeholder="Perkakasan (cth: Kamera Dome 2MP)">
-            
             <div class="input-grid">
                 <input type="number" id="itemQty" placeholder="Kuantiti">
                 <input type="number" id="itemPrice" placeholder="Harga / Unit (RM)">
             </div>
-            
             <button class="btn-add" onclick="addItem()">+ INJECT HARDWARE DATA</button>
 
             <div class="table-wrapper">
@@ -191,7 +169,6 @@
         </div>
 
         <button class="btn-execute" onclick="compileData()">COMPILE & PUSH TO WHATSAPP</button>
-
     </div>
 
     <nav class="bottom-nav">
@@ -202,6 +179,10 @@
         <a href="sebutharga.html" class="nav-item active">
             <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
             Quote
+        </a>
+        <a href="inventory.html" class="nav-item">
+            <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+            DB_Items
         </a>
         <a href="#" class="nav-item">
             <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
@@ -226,7 +207,6 @@
             const total = qty * price;
             grandTotal += total;
             
-            // Simpan data untuk di eksport nanti
             itemsList.push({ name, qty, price, total });
 
             document.getElementById('quoteTable').style.display = "table";
@@ -242,12 +222,9 @@
             document.getElementById('itemName').value = '';
             document.getElementById('itemQty').value = '';
             document.getElementById('itemPrice').value = '';
-            
-            // Fokus semula ke input nama item untuk kemasukan pantas
             document.getElementById('itemName').focus();
         }
 
-        // FUNGSI AKAN DATANG: Hantar terus data ke WhatsApp pelanggan
         function compileData() {
             const client = document.getElementById('clientName').value;
             if(!client || itemsList.length === 0) {
