@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBSS | Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Gaya Asas - Nanti pindahkan ke assets/css/dashboard.css */
+        :root {
+            --bg-dark: #0D1B2A; /* Mood gelap premium */
+            --bg-card: #121212; /* Warna kad sedikit terang */
+            --text-main: #FFFFFF;
+            --accent-blue: #007BFF; /* Biru Elektrik untuk Tindakan */
+            --accent-lime: #39FF14; /* Cyber Lime untuk Status */
+            --border-color: #2D3748;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+        }
+
+        /* Sidebar Navigasi */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            position: fixed;
+        }
+
+        .sidebar .brand {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-lime);
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar a {
+            display: block;
+            color: var(--text-main);
+            text-decoration: none;
+            padding: 15px 10px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .sidebar a:hover, .sidebar a.active {
+            background-color: rgba(0, 123, 255, 0.1);
+            color: var(--accent-blue);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 270px; /* Jarak dari sidebar */
+            padding: 30px;
+            width: calc(100% - 270px);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background-color: var(--bg-card);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-blue);
+        }
+
+        .stat-card .label {
+            font-size: 14px;
+            color: #A0AEC0;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent-lime);
+        }
+
+        .stat-card .sub-value {
+            font-size: 14px;
+            color: #718096;
+            margin-top: 5px;
+        }
+
+        .btn {
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="brand">DBSS <span>*</span></div>
+        <a href="dashboard.html" class="active">Dashboard</a>
+        <a href="sebutharga.html">Sebutharga (Quotation)</a>
+        <a href="laporan-kerja.html">Laporan Team (Coming Soon)</a>
+        <a href="index.html" style="margin-top: auto;">Log Keluar</a>
+    </nav>
+
+    <main class="main-content">
+        <header class="header">
+            <div>
+                <h1>Dashboard Utama</h1>
+                <p style="color: #A0AEC0;">Satu Ketikan, Seribu Solusi.</p>
+            </div>
+            <a href="sebutharga.html" class="btn">+ Buat Sebutharga</a>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="label">Sebutharga Keluar (Bulan Ini)</div>
+                <div class="value">12</div>
+                <div class="sub-value">Jumlah Potensi: RM 45,000</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Pemasangan Aktif</div>
+                <div class="value">3</div>
+                <div class="sub-value">CCTV (1), Solar (2)</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Projek Selesai (Bulan Ini)</div>
+                <div class="value">8</div>
+                <div class="sub-value">Alhamdulillah.</div>
+            </div>
+        </section>
+
+        </main>
+
+</body>
+</html>
