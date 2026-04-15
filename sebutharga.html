@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBSS | Janaan Sebutharga</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Gaya Asas Sebutharga - Nanti pindahkan ke assets/css/sebutharga.css */
+        :root {
+            --bg-dark: #0D1B2A;
+            --bg-card: #121212;
+            --text-main: #FFFFFF;
+            --accent-blue: #007BFF;
+            --accent-lime: #39FF14;
+            --border-color: #2D3748;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .header h1 {
+            color: var(--accent-lime);
+        }
+
+        /* Form Styling */
+        .quote-form, .items-section {
+            background-color: var(--bg-card);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #A0AEC0;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background-color: #1A202C;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            box-sizing: border-box; /* Sangat penting untuk input lebar penuh */
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-blue);
+            outline: none;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-family: 'JetBrains Mono', monospace; /* Data pakai monospaced */
+        }
+
+        table th, table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .total-section {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-lime);
+        }
+
+        .btn {
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .btn-add {
+            background-color: #2D3748;
+            color: #A0AEC0;
+        }
+
+        .btn-add:hover {
+            background-color: #4A5568;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Janaan Sebutharga DBSS</h1>
+            <p style="color: #A0AEC0;">Lengkapkan butiran pelanggan dan tambah item.</p>
+        </div>
+
+        <section class="quote-form">
+            <h2>Butiran Pelanggan</h2>
+            <div class="form-group">
+                <label>Nama Pelanggan/Syarikat</label>
+                <input type="text" placeholder="Contoh: En. Ali atau ABC Sdn Bhd">
+            </div>
+            <div class="form-group">
+                <label>Alamat Pemasangan</label>
+                <input type="text" placeholder="No. 123, Jalan Tech...">
+            </div>
+        </section>
+
+        <section class="items-section">
+            <h2>Tambah Item</h2>
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 0.5fr; gap: 10px;">
+                <input type="text" id="itemName" placeholder="Nama Item (CCTV, Panel Solar...)">
+                <input type="number" id="itemQty" placeholder="Kuantiti">
+                <input type="number" id="itemPrice" placeholder="Harga Seunit (RM)">
+                <button class="btn btn-add" onclick="addItem()">+</button>
+            </div>
+
+            <table id="itemsTable">
+                <thead>
+                    <tr>
+                        <th>Deskripsi</th>
+                        <th>Kuantiti</th>
+                        <th>Harga Seunit</th>
+                        <th>Jumlah</th>
+                    </tr>
+                </thead>
+                <tbody id="itemsBody">
+                    </tbody>
+            </table>
+
+            <div class="total-section">
+                Jumlah Keseluruhan: RM <span id="grandTotal">0.00</span>
+            </div>
+        </section>
+
+        <div style="margin-top: 30px; text-align: center;">
+            <a href="dashboard.html" style="color: #A0AEC0; text-decoration: none; margin-right: 20px;">Kembali</a>
+            <button class="btn" style="background-color: #28a745;">Hantar WhatsApp</button>
+            <button class="btn">Muat Turun PDF (Nanti)</button>
+        </div>
+    </div>
+
+    <script>
+        let grandTotal = 0;
+
+        function addItem() {
+            const name = document.getElementById('itemName').value;
+            const qty = parseFloat(document.getElementById('itemQty').value);
+            const price = parseFloat(document.getElementById('itemPrice').value);
+
+            if (!name || isNaN(qty) || isNaN(price)) {
+                alert("Sila isi semua butiran item.");
+                return;
+            }
+
+            const total = qty * price;
+            grandTotal += total;
+
+            // Tambah baris ke jadual
+            const tableBody = document.getElementById('itemsBody');
+            const row = tableBody.insertRow();
+            row.innerHTML = `
+                <td>${name}</td>
+                <td>${qty}</td>
+                <td>RM ${price.toFixed(2)}</td>
+                <td style="color: #39FF14;">RM ${total.toFixed(2)}</td>
+            `;
+
+            // Kemas kini jumlah keseluruhan
+            document.getElementById('grandTotal').innerText = grandTotal.toFixed(2);
+
+            // Bersihkan input
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemQty').value = '';
+            document.getElementById('itemPrice').value = '';
+        }
+    </script>
+
+</body>
+</html>
