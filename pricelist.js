@@ -1,38 +1,68 @@
 // Fail: pricelist.js
-// Ini adalah senarai harga kos terus dari supplier (Cth: RisingNet)
+// Pangkalan Data Harga Kos Pembekal (RisingNet Pricebook)
 
 export const senaraiSupplier = {
-    // --- KATEGORI: KAMERA ANALOG (HDCVI) ---
+    // ==========================================
+    // 1. SISTEM CCTV (Kamera & Decoder)
+    // ==========================================
     kamera_analog: {
-        "DH-HAC-B1A21-U": { jenama: "Dahua", nama: "2MP IR HDCVI Bullet", hargaKos: 47.00 },
-        "DH-HAC-T1A21-U": { jenama: "Dahua", nama: "2MP IR HDCVI Eyeball", hargaKos: 46.50 },
-        "DH-HAC-T1A51-U": { jenama: "Dahua", nama: "5MP IR HDCVI Eyeball", hargaKos: 76.00 }
+        "dh_hac_t1a21": { jenama: "Dahua", nama: "2MP HDCVI Eyeball (Cooper)", hargaKos: 46.50 },
+        "dh_hac_b1a21": { jenama: "Dahua", nama: "2MP HDCVI Bullet (Cooper)", hargaKos: 47.00 },
+        "dh_hac_hdw1239": { jenama: "Dahua", nama: "2MP Full-Color HDCVI", hargaKos: 135.00 }
     },
-    
-    // --- KATEGORI: KAMERA IP (NETWORK CAMERA) ---
     kamera_ip: {
-        "DH-IPC-HDW1230T1": { jenama: "Dahua", nama: "2MP IR Eyeball IP", hargaKos: 130.00 },
-        "DH-IPC-HFW1431S1": { jenama: "Dahua", nama: "4MP IR Bullet IP", hargaKos: 202.00 },
-        "Uho-S2E": { jenama: "Uniarch", nama: "2MP Indoor PT Wi-Fi", hargaKos: 60.00 },
-        "Uho-P2A-M3F4D": { jenama: "Uniarch", nama: "3MP Outdoor PT Wi-Fi", hargaKos: 96.00 }
+        "dh_ipc_hdw1230": { jenama: "Dahua", nama: "2MP Entry IR IP Camera", hargaKos: 130.00 },
+        "uniarch_s2e": { jenama: "Uniarch", nama: "Uho-S2E 2MP Indoor PT Wi-Fi", hargaKos: 60.00 },
+        "imou_ranger2": { jenama: "Imou", nama: "Ranger 2 3MP Wi-Fi PT", hargaKos: 72.00 }
+    },
+    decoder_xvr_nvr: {
+        "dh_xvr1b04": { jenama: "Dahua", nama: "4CH 5MP Cooper XVR", hargaKos: 244.00 },
+        "dh_nvr1104": { jenama: "Dahua", nama: "4CH Smart NVR", hargaKos: 310.00 }
     },
 
-    // --- KATEGORI: DECODER (XVR / NVR) ---
-    decoder: {
-        "DH-XVR1B04H-I": { jenama: "Dahua", nama: "4CH 5MP Cooper 1U DVR", hargaKos: 244.00 },
-        "DH-XVR1B08H-I": { jenama: "Dahua", nama: "8CH 5MP Cooper 1U DVR", hargaKos: 355.00 },
-        "DHI-NVR1104HS-P": { jenama: "Dahua", nama: "4CH 4PoE NVR", hargaKos: 310.00 }
+    // ==========================================
+    // 2. RANGKAIAN & INTERNET (Network / Wi-Fi)
+    // ==========================================
+    networking_switch: {
+        "rg_es205g_p": { jenama: "Ruijie Reyee", nama: "5-Port Gigabit PoE Cloud Switch", hargaKos: 185.00 },
+        "rg_es209g_p": { jenama: "Ruijie Reyee", nama: "9-Port Gigabit PoE Cloud Switch", hargaKos: 340.00 }
+    },
+    networking_ap_router: {
+        "rg_ew1200": { jenama: "Ruijie Reyee", nama: "1200M Dual-band Mesh Router", hargaKos: 110.00 },
+        "rg_rap2200": { jenama: "Ruijie Reyee", nama: "AC1300 Ceiling Access Point", hargaKos: 290.00 }
     },
 
-    // --- KATEGORI: AKSESORI & KABEL ---
-    aksesori: {
-        "PFM300": { jenama: "Dahua", nama: "DC12V2A Power Adapter", hargaKos: 22.00 },
-        "balun_standard": { jenama: "OEM", nama: "Balun Standard (2MP)", hargaKos: 12.00 },
-        "bnc_conn": { jenama: "OEM", nama: "BNC Connector (1 pcs)", hargaKos: 2.50 },
-        "dc_conn": { jenama: "OEM", nama: "DC Connector (1 pcs)", hargaKos: 1.50 },
-        "kabel_utp": { jenama: "OEM", nama: "UTP Cat5e/Cat6 (Roll)", hargaKos: 130.00 }
+    // ==========================================
+    // 3. SISTEM PENGGERA & KAWALAN AKSES (Alarm & Access Control)
+    // ==========================================
+    alarm_system: {
+        "bg_v9": { jenama: "Bluguard", nama: "V9 Smart Home Alarm Panel", hargaKos: 380.00 },
+        "bg_sensor_door": { jenama: "Bluguard", nama: "Magnetic Door Sensor", hargaKos: 15.00 },
+        "bg_siren": { jenama: "Bluguard", nama: "Outdoor Siren Box Set", hargaKos: 65.00 }
+    },
+    access_control: {
+        "eb_emlock": { jenama: "Ebelco", nama: "600lbs EM Lock", hargaKos: 85.00 },
+        "eb_pushbtn": { jenama: "Ebelco", nama: "Exit Push Button", hargaKos: 12.00 }
+    },
+
+    // ==========================================
+    // 4. AKSESORI, KABEL & RAK PERALATAN
+    // ==========================================
+    kabel_wiring: {
+        "cab_utp6": { jenama: "OEM", nama: "UTP Cat6 (Roll 305m)", hargaKos: 160.00 },
+        "cab_rg59": { jenama: "OEM", nama: "Coaxial RG59 + Power (Roll)", hargaKos: 180.00 }
+    },
+    power_supply: {
+        "psu_10a": { jenama: "OEM", nama: "12V 10A Metal Box", hargaKos: 92.00 }
+    },
+    equipment_rack: {
+        "st_4u": { jenama: "ST Rack", nama: "4U Wall Mount Rack", hargaKos: 145.00 },
+        "st_6u": { jenama: "ST Rack", nama: "6U Wall Mount Rack", hargaKos: 180.00 }
+    },
+    monitor_display: {
+        "vs_va22": { jenama: "ViewSonic", nama: "22-inch FHD Monitor", hargaKos: 320.00 }
     }
 };
 
-// Tetapan Automatik Margin Keuntungan Anda (Contoh: 30% atau 0.3)
+// MARKUP KEUNTUNGAN KESELURUHAN (30%)
 export const markupKeuntungan = 0.30; 
