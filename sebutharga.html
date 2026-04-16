@@ -62,7 +62,8 @@
 
         .glass-panel.highlight-panel { border-left: 3px solid var(--accent-blue); }
 
-        h2 { margin-top: 0; font-size: 14px; color: var(--accent-blue); letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;}
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;}
+        h2 { margin: 0; font-size: 14px; color: var(--accent-blue); letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; display: flex; align-items: center; gap: 8px;}
 
         input, select, textarea {
             width: 100%; padding: 12px; margin-bottom: 12px;
@@ -76,6 +77,15 @@
         select { appearance: none; color: var(--accent-lime); font-weight: 600;}
 
         .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        .markup-box {
+            display: flex; align-items: center; gap: 5px;
+            font-size: 10px; color: #A0AEC0; font-family: 'JetBrains Mono', monospace;
+        }
+        .markup-box input {
+            width: 50px; padding: 5px; margin: 0; text-align: center;
+            height: auto; font-size: 12px; color: var(--accent-lime);
+        }
 
         .btn-add {
             width: 100%; background: transparent; border: 1px dashed var(--accent-lime);
@@ -96,6 +106,8 @@
         th, td { text-align: left; padding: 10px 5px; border-bottom: 1px solid var(--glass-border); white-space: nowrap; }
         th { color: #A0AEC0; font-weight: normal; }
         .row-total { color: var(--accent-lime); }
+        
+        .delete-btn { background: rgba(255,0,0,0.2); color: #FF3B30; border: none; border-radius: 4px; padding: 4px 8px; cursor: pointer; font-size: 10px; }
 
         .total-display { text-align: right; font-size: 22px; font-weight: 700; color: var(--text-main); margin-top: 10px; font-family: 'JetBrains Mono', monospace; }
         .total-display span { color: var(--accent-lime); }
@@ -121,7 +133,9 @@
     <div class="container">
         
         <div class="glass-panel highlight-panel">
-            <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> 1. Site Assessment</h2>
+            <div class="panel-header">
+                <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> 1. Site Assessment</h2>
+            </div>
             <input type="text" id="clientName" placeholder="Nama Pelanggan / Projek">
             <div class="input-grid">
                 <select id="systemType">
@@ -141,11 +155,21 @@
         </div>
 
         <div class="glass-panel">
-            <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg> 2. System Variables</h2>
-            <input type="text" id="itemName" placeholder="Perkakasan (cth: Kamera Dome 2MP)">
+            <div class="panel-header">
+                <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg> 2. System Variables</h2>
+                <div class="markup-box">
+                    <span>PROFIT MARGIN:</span>
+                    <input type="number" id="quoteMarkup" value="30" onchange="autoFillPrice()"><span>%</span>
+                </div>
+            </div>
+            
+            <input type="text" id="itemName" list="inventoryList" placeholder="Cari dari DB / Taip Manual (Cth: Kamera 2MP)" oninput="autoFillPrice()">
+            <datalist id="inventoryList">
+                </datalist>
+            
             <div class="input-grid">
                 <input type="number" id="itemQty" placeholder="Kuantiti">
-                <input type="number" id="itemPrice" placeholder="Harga / Unit (RM)">
+                <input type="number" id="itemPrice" placeholder="Harga Jualan (RM)">
             </div>
             <button class="btn-add" onclick="addItem()">+ INJECT HARDWARE DATA</button>
 
@@ -157,6 +181,7 @@
                             <th>Qty</th>
                             <th>RM</th>
                             <th>Sub</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody id="itemsBody"></tbody>
@@ -190,49 +215,140 @@
         </a>
     </nav>
 
+    <script src="assets/js/db/db-dahua-camera.js"></script>
+    <script src="assets/js/db/db-dahua-recorder.js"></script>
+    <script src="assets/js/db/db-dahua-network.js"></script>
+    <script src="assets/js/db/db-dahua-network-recorder.js"></script>
+    <script src="assets/js/db/db-dahua-accessories.js"></script>
+
     <script>
+        let dbItems = [];
         let grandTotal = 0;
         let itemsList = [];
 
+        // 1. Tarik Data Inventori untuk Dropdown Sebutharga
+        function initializeQuoteDB() {
+            const localData = localStorage.getItem('dbss_inventory');
+            if (localData) {
+                dbItems = JSON.parse(localData);
+            } else {
+                try {
+                    const cams = typeof dahuaCameras !== 'undefined' ? dahuaCameras : [];
+                    const recs = typeof dahuaRecorders !== 'undefined' ? dahuaRecorders : [];
+                    const netcams = typeof dahuaNetworkCameras !== 'undefined' ? dahuaNetworkCameras : []; 
+                    const netrecs = typeof dahuaNetworkRecorders !== 'undefined' ? dahuaNetworkRecorders : []; 
+                    const accessories = typeof dahuaAccessories !== 'undefined' ? dahuaAccessories : [];
+                    dbItems = [...cams, ...recs, ...netcams, ...netrecs, ...accessories];
+                    localStorage.setItem('dbss_inventory', JSON.stringify(dbItems));
+                } catch (error) {
+                    console.error("Gagal memuatkan data pangkalan data.", error);
+                }
+            }
+            populateDatalist();
+        }
+
+        // 2. Isi Dropdown Datalist
+        function populateDatalist() {
+            const datalist = document.getElementById('inventoryList');
+            datalist.innerHTML = '';
+            
+            dbItems.forEach(item => {
+                const option = document.createElement('option');
+                // Gabungkan ID dan Nama supaya carian lebih mudah dan spesifik
+                option.value = `${item.id} - ${item.name}`;
+                datalist.appendChild(option);
+            });
+        }
+
+        // 3. Automatik Kira & Isi Harga Jualan Jika Item Dipilih Dari Pangkalan Data
+        function autoFillPrice() {
+            const selectedValue = document.getElementById('itemName').value;
+            const markup = parseFloat(document.getElementById('quoteMarkup').value) || 0;
+            const priceInput = document.getElementById('itemPrice');
+            
+            // Cari item yang sepadan dengan nilai yang dipilih
+            const foundItem = dbItems.find(item => `${item.id} - ${item.name}` === selectedValue);
+            
+            if (foundItem) {
+                if (parseFloat(foundItem.cost) > 0) {
+                    // Formula: Kos + (Kos * % Markup)
+                    const sellPrice = parseFloat(foundItem.cost) + (parseFloat(foundItem.cost) * (markup / 100));
+                    priceInput.value = sellPrice.toFixed(2);
+                } else {
+                    // Jika kos RM 0.00 (Ask Price / Rujuk Supplier)
+                    priceInput.value = "";
+                    priceInput.placeholder = "Rujuk Supplier (Kos 0)";
+                }
+            }
+        }
+
+        // 4. Proses Tambah ke Dalam Jadual Sebutharga
         function addItem() {
             const name = document.getElementById('itemName').value;
             const qty = parseFloat(document.getElementById('itemQty').value);
             const price = parseFloat(document.getElementById('itemPrice').value);
 
             if (!name || isNaN(qty) || isNaN(price)) {
-                alert("Sistem Mesej: Sila lengkapkan data perkakasan.");
+                alert("Sistem Mesej: Sila lengkapkan nama perkakasan, kuantiti dan harga.");
                 return;
             }
 
             const total = qty * price;
-            grandTotal += total;
             
             itemsList.push({ name, qty, price, total });
+            renderTable();
 
-            document.getElementById('quoteTable').style.display = "table";
-            const row = document.getElementById('itemsBody').insertRow();
-            row.innerHTML = `
-                <td>${name}</td>
-                <td>${qty}</td>
-                <td>${price.toFixed(0)}</td>
-                <td class="row-total">${total.toFixed(0)}</td>
-            `;
-
-            document.getElementById('grandTotal').innerText = grandTotal.toFixed(2);
             document.getElementById('itemName').value = '';
             document.getElementById('itemQty').value = '';
             document.getElementById('itemPrice').value = '';
+            document.getElementById('itemPrice').placeholder = 'Harga Jualan (RM)';
             document.getElementById('itemName').focus();
         }
 
+        // 5. Render Semula Jadual (Untuk menyokong fungsi buang item tersilap)
+        function renderTable() {
+            const tableBody = document.getElementById('itemsBody');
+            tableBody.innerHTML = '';
+            grandTotal = 0;
+
+            if(itemsList.length > 0) {
+                document.getElementById('quoteTable').style.display = "table";
+            } else {
+                document.getElementById('quoteTable').style.display = "none";
+            }
+
+            itemsList.forEach((item, index) => {
+                grandTotal += item.total;
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.qty}</td>
+                    <td>${item.price.toFixed(0)}</td>
+                    <td class="row-total">${item.total.toFixed(0)}</td>
+                    <td><button class="delete-btn" onclick="removeItem(${index})">X</button></td>
+                `;
+            });
+
+            document.getElementById('grandTotal').innerText = grandTotal.toFixed(2);
+        }
+
+        // 6. Buang item dari jadual
+        function removeItem(index) {
+            itemsList.splice(index, 1);
+            renderTable();
+        }
+
+        // 7. Modul Hantar ke WhatsApp
         function compileData() {
             const client = document.getElementById('clientName').value;
             if(!client || itemsList.length === 0) {
-                alert("Sistem Mesej: Nama pelanggan atau senarai perkakasan kosong.");
+                alert("Sistem Mesej: Nama pelanggan atau senarai perkakasan masih kosong.");
                 return;
             }
             alert("Fungsi simulasi: Data sebutharga untuk " + client + " bersedia untuk di 'push' ke WhatsApp/PDF. Backend diperlukan untuk eksekusi penuh.");
         }
+
+        window.onload = initializeQuoteDB;
     </script>
 </body>
 </html>
