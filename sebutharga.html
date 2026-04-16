@@ -75,6 +75,8 @@
         textarea { resize: vertical; min-height: 80px; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent-blue); }
         select { appearance: none; color: var(--accent-lime); font-weight: 600;}
+        
+        .filter-label { font-size: 10px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; margin-bottom: 5px; display: block; }
 
         .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
@@ -163,7 +165,13 @@
                 </div>
             </div>
             
-            <input type="text" id="itemName" list="inventoryList" placeholder="Cari dari DB / Taip Manual (Cth: Kamera 2MP)" oninput="autoFillPrice()">
+            <span class="filter-label">Tapis Kategori Dahulu</span>
+            <select id="quoteGroupFilter" onchange="filterDatalist()" style="margin-bottom: 10px;">
+                <option value="ALL">-- SEMUA KATEGORI PANGKALAN DATA --</option>
+                </select>
+
+            <span class="filter-label">Pilih Item / Taip Manual Baru</span>
+            <input type="text" id="itemName" list="inventoryList" placeholder="Cari Perkakasan..." oninput="autoFillPrice()">
             <datalist id="inventoryList">
                 </datalist>
             
@@ -226,7 +234,7 @@
         let grandTotal = 0;
         let itemsList = [];
 
-        // 1. Tarik Data Inventori untuk Dropdown Sebutharga
+        // 1. Tarik Data Inventori
         function initializeQuoteDB() {
             const localData = localStorage.getItem('dbss_inventory');
             if (localData) {
@@ -244,29 +252,60 @@
                     console.error("Gagal memuatkan data pangkalan data.", error);
                 }
             }
-            populateDatalist();
+            
+            populateQuoteCategories(); // Jana kategori dropdown
+            filterDatalist(); // Jana senarai carian berdasarkan kategori
         }
 
-        // 2. Isi Dropdown Datalist
-        function populateDatalist() {
-            const datalist = document.getElementById('inventoryList');
-            datalist.innerHTML = '';
+        // 2. Jana Kategori dalam Dropdown Pertama
+        function populateQuoteCategories() {
+            const groupFilter = document.getElementById('quoteGroupFilter');
             
-            dbItems.forEach(item => {
+            // Dapatkan senarai Kumpulan (Group) yang unik & buang nilai kosong
+            const uniqueGroups = [...new Set(dbItems.map(item => item.group).filter(Boolean))]; 
+            
+            uniqueGroups.forEach(group => {
                 const option = document.createElement('option');
-                // Gabungkan ID dan Nama supaya carian lebih mudah dan spesifik
+                option.value = group;
+                option.textContent = group;
+                groupFilter.appendChild(option);
+            });
+        }
+
+        // 3. Tapis Carian (Datalist) berdasarkan Kategori yang dipilih
+        function filterDatalist() {
+            const selectedGroup = document.getElementById('quoteGroupFilter').value;
+            const datalist = document.getElementById('inventoryList');
+            
+            datalist.innerHTML = ''; // Kosongkan senarai lama
+            
+            // Kosongkan input bawah setiap kali tukar kategori supaya tiada ralat harga
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemPrice').value = '';
+            document.getElementById('itemPrice').placeholder = 'Harga Jualan (RM)';
+            
+            let filteredItems = dbItems;
+            
+            if (selectedGroup !== 'ALL') {
+                // Tapis data mengikut kumpulan
+                filteredItems = dbItems.filter(item => item.group === selectedGroup);
+            }
+            
+            // Masukkan data yang ditapis ke dalam Datalist untuk fungsi 'Search'
+            filteredItems.forEach(item => {
+                const option = document.createElement('option');
                 option.value = `${item.id} - ${item.name}`;
                 datalist.appendChild(option);
             });
         }
 
-        // 3. Automatik Kira & Isi Harga Jualan Jika Item Dipilih Dari Pangkalan Data
+        // 4. Automatik Kira & Isi Harga Jualan Jika Item Dipilih
         function autoFillPrice() {
             const selectedValue = document.getElementById('itemName').value;
             const markup = parseFloat(document.getElementById('quoteMarkup').value) || 0;
             const priceInput = document.getElementById('itemPrice');
             
-            // Cari item yang sepadan dengan nilai yang dipilih
+            // Cari item yang sepadan dengan nilai input carian
             const foundItem = dbItems.find(item => `${item.id} - ${item.name}` === selectedValue);
             
             if (foundItem) {
@@ -282,7 +321,7 @@
             }
         }
 
-        // 4. Proses Tambah ke Dalam Jadual Sebutharga
+        // 5. Proses Tambah ke Dalam Jadual Sebutharga
         function addItem() {
             const name = document.getElementById('itemName').value;
             const qty = parseFloat(document.getElementById('itemQty').value);
@@ -305,7 +344,7 @@
             document.getElementById('itemName').focus();
         }
 
-        // 5. Render Semula Jadual (Untuk menyokong fungsi buang item tersilap)
+        // 6. Render Semula Jadual
         function renderTable() {
             const tableBody = document.getElementById('itemsBody');
             tableBody.innerHTML = '';
@@ -332,13 +371,13 @@
             document.getElementById('grandTotal').innerText = grandTotal.toFixed(2);
         }
 
-        // 6. Buang item dari jadual
+        // 7. Buang item dari jadual
         function removeItem(index) {
             itemsList.splice(index, 1);
             renderTable();
         }
 
-        // 7. Modul Hantar ke WhatsApp
+        // 8. Modul Hantar ke WhatsApp
         function compileData() {
             const client = document.getElementById('clientName').value;
             if(!client || itemsList.length === 0) {
