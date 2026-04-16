@@ -138,7 +138,24 @@
             <div class="panel-header">
                 <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> 1. Site Assessment</h2>
             </div>
+            
             <input type="text" id="clientName" placeholder="Nama Pelanggan / Projek">
+            
+            <div class="input-grid">
+                <input type="tel" id="clientPhone" placeholder="No. Telefon">
+                <select id="leadSource">
+                    <option value="" disabled selected>Lead Dari Mana?</option>
+                    <option value="WhatsApp">Talian WhatsApp</option>
+                    <option value="Facebook">Iklan Facebook</option>
+                    <option value="Website">Laman Web</option>
+                    <option value="Rujukan">Rujukan (Kawan/Pelanggan Lama)</option>
+                    <option value="Walk-in">Walk-in</option>
+                    <option value="Lain-lain">Lain-lain</option>
+                </select>
+            </div>
+
+            <input type="text" id="clientAddress" placeholder="Alamat Tapak Pemasangan (Optional)">
+            
             <div class="input-grid">
                 <select id="systemType">
                     <option value="CCTV">Sistem CCTV</option>
@@ -377,14 +394,16 @@
             renderTable();
         }
 
-        // 8. Modul Hantar ke WhatsApp
+        // 8. Modul Hantar ke WhatsApp (DIKEMAS KINI DENGAN SEMAKAN NO TELEFON)
         function compileData() {
             const client = document.getElementById('clientName').value;
-            if(!client || itemsList.length === 0) {
-                alert("Sistem Mesej: Nama pelanggan atau senarai perkakasan masih kosong.");
+            const phone = document.getElementById('clientPhone').value;
+            
+            if(!client || !phone || itemsList.length === 0) {
+                alert("Sistem Mesej: Nama pelanggan, No. Telefon atau senarai perkakasan masih kosong. Sila lengkapkan data kritikal ini.");
                 return;
             }
-            alert("Fungsi simulasi: Data sebutharga untuk " + client + " bersedia untuk di 'push' ke WhatsApp/PDF. Backend diperlukan untuk eksekusi penuh.");
+            alert("Fungsi simulasi: Data sebutharga untuk " + client + " (" + phone + ") bersedia untuk di 'push' ke WhatsApp. Backend diperlukan untuk eksekusi penuh.");
         }
 
         window.onload = initializeQuoteDB;
